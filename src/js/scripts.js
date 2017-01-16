@@ -31,18 +31,6 @@
 		var form = $('form');
 
 		/*
-			get selectedWikiSlug
-		 */
-		var valStart = document.cookie.indexOf("=") + 1;
-	    var valEnd = document.cookie.indexOf(";");
-        if (valEnd == -1) {
-        	valEnd = document.cookie.length;
-    	}
-    	var lastWikiUrl = document.cookie.substring(valStart, valEnd);
-    	form.find('input[name="url"]').val(lastWikiUrl);
-
-
-		/*
 			Parse-Button
 		 */
 		
@@ -78,8 +66,6 @@
 				'remove_n': $('#opt_remove_n')[0].checked,
 			};
 
-			// set cookie
-			document.cookie = 'lastWikiUrl=' + wiki_url + ';';
 
 			// clear output
 			clearOutput();
