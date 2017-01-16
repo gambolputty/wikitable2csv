@@ -1,0 +1,134 @@
+/*------------------------------------*\
+    VARIABLES
+\*------------------------------------*/
+
+$em-base:1rem;
+$modular-scale-ratio: $minor-second;
+
+
+// Font weights
+$regular: 400;
+$semi-bold: 500;
+$bold: 700;
+
+
+
+// Font Families
+$font-family-1: 'Roboto', sans-serif;
+$font-family-2: Consolas, monaco, monospace;
+// $font-family-3: 'Roboto Condensed', sans-serif;
+
+
+
+// Font Sizes
+$font-size-large-x: rem(modular-scale(6));
+$font-size-large: rem(modular-scale(5)); 
+$font-size-medium: rem(modular-scale(4));
+$font-size-normal: $em-base;
+$font-size-small:rem(modular-scale(-3));
+$font-size-small-x:rem(modular-scale(-5));
+
+$line-height: 1.625;
+
+
+
+/*
+    Font mixins
+ */
+
+
+
+// Font-Family 1
+
+@mixin font-family-1-large {
+    font-family: $font-family-1;
+    font-size: $font-size-large;
+    letter-spacing: normal;    
+}
+
+@mixin font-family-1-medium {
+    font-family: $font-family-1;
+    font-size: $font-size-medium;
+    letter-spacing: normal;    
+}
+
+@mixin font-family-1-normal {
+    font-family: $font-family-1;
+    font-size: $font-size-normal;
+    letter-spacing: normal;
+}
+
+@mixin font-family-1-small {
+    font-family: $font-family-1;
+    font-size: $font-size-small;
+    letter-spacing: .03rem;
+}
+
+
+
+// Font Family 2
+
+@mixin font-family-2-normal {
+    font-family: $font-family-2;
+    font-size: $font-size-normal;
+    letter-spacing: normal;
+}
+
+// @mixin font-family-2-small {
+//     font-family: $font-family-2;
+//     font-size: 0.9rem;
+//     letter-spacing: .03rem;
+// }
+
+
+// colors
+$color_bg: #fff;
+$color_text: #111;
+$color_link: #222; // 5300FF
+$color_link_h: #2b02f3;
+$color_link_a: darken($color_link_h, 20%);
+$color_grey_1: #ddd;
+$color_grey_2: #bbb;
+$color_red: #f20a02;
+$color_head: $color_link_h;
+
+
+// paddings & margins
+$page-padding-mobile: 2.5%;
+$page-padding-tablet: 2%;
+$page-padding-desktop: 0;
+
+$icon-size: 1.5rem;
+$border-width: 2px;
+
+
+/*
+	Layout
+	Breakpoints, margins, paddings etc.
+ */ 
+
+
+$header_h: 2rem;
+$entry_column_1_width_desktop: 2.3;
+$entry_column_2_width_desktop: 7.7 ;
+$entry_column_1_width_laptop: 2;
+$entry_column_2_width_laptop: 8;
+$entry_column_1_width_wide: 2;
+$entry_column_2_width_wide: 8;
+$max_entry_content_width:640px;
+
+// Masonry brick
+$masonry_max_width_col1:202px; 
+// $masonry_max_width_col1_wide:192px; 
+$masonry_max_width_col2:486px; 
+
+// Media Queries break points
+$mobile: new-breakpoint(min-width 320px );
+$mobileLandscape: new-breakpoint(min-width 480px );
+$tablet: new-breakpoint(min-width 768px);
+$desktop: new-breakpoint(min-width 900px );
+$laptop: new-breakpoint(min-width 1200px );
+$wide: new-breakpoint(min-width 1600px );
+$wide-x: new-breakpoint(min-width 1700px );
+
+

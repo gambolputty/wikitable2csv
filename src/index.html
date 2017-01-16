@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Wiki Table to CSV</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Convert Wikipedia Tables to CSV.">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700" rel="stylesheet">
+	<link rel='stylesheet' href='style.css' type='text/css' media='all' />
+	<script type='text/javascript' src='scripts.js'></script>
+</head> 
+<body>
+
+	<div id="wrapper">
+		
+		<div id="input">
+			<h1>Convert Wikipedia Tables to CSV</h1>
+
+			<form>
+				<h2>Input</h2>
+
+				<p><label for="title">Url:</label><input type="text" name="url"></select></p>
+
+				<fieldset>
+					<legend>Options:</legend>
+					<div class="wrap">
+						<p><label for="opt_trim">Trim cells:</label><input type="checkbox" checked id="opt_trim" value="1"></p>
+						<p><label for="opt_remove_n">Remove line breaks in cells:</label><input type="checkbox" checked id="opt_remove_n" value="1"></p>
+						<p><label for="title">HTML table selector:</label><input type="text" name="table-selector" value="table.wikitable"></p>
+					</div
+>				</fieldset>
+
+				<p><button id="button-parse">Parse!</button></p>
+			</form>
+
+		</div>
+
+
+		<div id="output" class="clear">
+			
+			<h2>Output <a href="javascript:void(0)">(clear)</a></h2>
+			<div class="result"></div>
+			<p class="no-output">No output generated.</p>
+		</div>
+
+		<div id="footer">
+			Made by <a href="http://ggor.de" target="_blank">Gregor Weichbrodt</a>
+		</div>
+
+	</div>
+
+</body>
+</html>
