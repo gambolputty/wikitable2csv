@@ -118,14 +118,14 @@ button {
 	#input form {
 		p {
 			label {
-				width: 30%;
+				width: 40%;
 				display: inline-block;
 				vertical-align: middle;
 			}
 			input, select {
 				display: inline-block;
 				vertical-align: middle;
-				width: 70%;
+				width: 60%;
 			}
 			input[name="table-selector"] {
 				@include font-family-2-normal();
