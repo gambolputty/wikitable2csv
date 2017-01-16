@@ -1,6 +1,6 @@
 (function ($, root, undefined) {
 
-    var debug = false;
+    var debug = true;
     if (!debug) {
         console.debug = function() {};
     }
@@ -97,6 +97,11 @@
 			.done(function(html) {
 				
 				console.debug('Request completed');
+
+				if ( $(html).filter(table_selector).length <= 0) {
+					alert('Error: could not find any tables on page ' + wiki_url);
+					return;
+				}
 
 				$(html).filter(table_selector).each(function(idx, table_el) { 
 
