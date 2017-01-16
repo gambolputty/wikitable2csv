@@ -6,18 +6,38 @@
     }
 
 
-    function parseCell(text, options) {
+    function parseCell(cell_item, options) {
 
-    	var result = text;
+    	// remove invisible elements in cells
+    	var every_el = cell_item.find('*');
+    	for (var i = 0; i < every_el.length; i++) {
+    		if ($(every_el[i]).css('display') == 'none' ) {
+    			$(every_el[i]).remove();
+    		}
+    	}
+
+    	var line = cell_item.text();
 
     	if (options.trim === true) {
-    		result = result.trim();
+    		line = line.trim();
     	}
 
     	if (options.remove_n === true) {
-	    	result = result.replace(/\r?\n|\r/g, ' ');
+	    	line = line.replace(/\r?\n|\r/g, ' ');
     	}
-    	return result;
+
+    	// escape double quotes in line
+    	if (/\"/.test(line)) {
+    		line = line.replace(/\"/g, '""');
+    	}
+
+    	// put line in double quotes
+    	// if line break, comma or quote found in line
+    	if (/\r|\n|\"|,/.test(line)) {
+    		line = '"' + line + '"';
+    	}
+
+    	return line;
     }
 
 
@@ -102,29 +122,12 @@
 						if ( el.find('> th, > td').length ) {
 							var row = el.find('th, td');
 
-							// remove invisible elements in cells
-							var every_el = row.find('*');
-							var every_el_len = every_el.length;
-							for (var i = 0; i < every_el_len; i++) {
-								if ($(every_el[i]).css('display') == 'none' ) {
-									$(every_el[i]).remove();
-								}
-							}
 
 							var row_len = row.length;
 							for (var i = 0; i < row_len; i++) {
-								parsed_cell = parseCell($(row[i]).text(), options);
+								parsed_cell = parseCell($(row[i]), options);
 
 								var csv_line = parsed_cell;
-
-								// enclose in double quotes
-								if (/\r|\n|\"|,/.test(csv_line)) {
-									if (/\"/.test(csv_line)) {
-										// escape double quote
-										csv_line = csv_line.replace('"', '""');
-									}
-									csv_line = '"' + csv_line + '"';
-								}
 
 								if (i == (row_len - 1)) {
 									csv += csv_line + '\n';
