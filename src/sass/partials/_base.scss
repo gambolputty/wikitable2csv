@@ -191,8 +191,12 @@ button {
 	}
 
 	#footer {
-		padding: rem($line-height/2) 0;
+		padding: rem($line-height/2) 0 rem($line-height*2);
 		border-top: 1px solid $color_grey_1;
+		a {
+			display: inline-block;
+			vertical-align: middle;
+		}
 	}
 }
 

@@ -1,6 +1,6 @@
 (function ($, root, undefined) {
 
-    var debug = true;
+    var debug = false;
     if (!debug) {
         console.debug = function() {};
     }
