@@ -115,6 +115,16 @@
 
 						if ( el.find('> th, > td').length ) {
 							var row = el.find('th, td');
+
+							// remove invisible elements in cells
+							var every_el = row.find('*');
+							var every_el_len = every_el.length;
+							for (var i = 0; i < every_el_len; i++) {
+								if ($(every_el[i]).css('display') == 'none' ) {
+									$(every_el[i]).remove();
+								}
+							}
+
 							var row_len = row.length;
 							for (var i = 0; i < row_len; i++) {
 								parsed_cell = parseCell($(row[i]).text(), options);
