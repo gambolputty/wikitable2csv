@@ -6,4 +6,4 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Avail
 2. Press "Convert".
 3. Copy the results to your clipboard.
 
-Vendor packages: jQuery and [clipboard.js](https://github.com/zenorocha/clipboard.js/)
+JS vendor packages: jQuery and [clipboard.js](https://github.com/zenorocha/clipboard.js/)
