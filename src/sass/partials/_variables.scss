@@ -88,7 +88,7 @@ $color_link: #222; // 5300FF
 $color_link_h: #2b02f3;
 $color_link_a: darken($color_link_h, 20%);
 $color_grey_1: #eee;
-$color_grey_2: #bbb;
+$color_grey_2: #999;
 $color_red: #f20a02;
 $color_head: $color_link_h;
 
@@ -101,6 +101,7 @@ $page-padding-desktop: 0;
 $icon-size: 1.5rem;
 $border-width: 2px;
 
+$border-radius: 4px;
 
 /*
 	Layout
