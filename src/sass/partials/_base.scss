@@ -60,12 +60,16 @@ a {
 h1 {
 	@include font-family-1-large();
 	font-weight: 700;
-	margin-bottom: rem($line-height*1.5);
+	margin-bottom: rem($line-height);
 }
 h2 {
 	font-weight: 700;
-	margin-bottom: rem($line-height);
+	margin-bottom: rem($line-height/2);
 	@include font-family-1-medium();	
+}
+h3 {
+	@include font-family-1-normal();
+	font-weight: 700;
 }
 p {
 	margin-bottom: rem($line-height/2);
@@ -111,21 +115,25 @@ button {
 	@include outer-container();
 	margin: 0 auto;
 
-	#input, #output, #footer {
+	#header, #input, #output, #footer {
 		margin-top: rem($line-height*2);
+	}
+
+	#header {
+		// border-bottom: 1px solid $color_grey_1;
 	}
 
 	#input form {
 		p {
 			label {
-				width: 40%;
+				width: 30%;
 				display: inline-block;
 				vertical-align: middle;
 			}
 			input, select {
 				display: inline-block;
 				vertical-align: middle;
-				width: 60%;
+				width: 70%;
 			}
 			input[name="table-selector"] {
 				@include font-family-2-normal();
@@ -151,6 +159,9 @@ button {
 			}
 
 		}
+		button {
+			
+		}
 	}
 
 	#output {
@@ -167,10 +178,6 @@ button {
 		
 		.output-block {
 			margin-bottom: rem($line-height);
-			h3 {
-				@include font-family-1-normal();
-				font-weight: 700;
-			}
 			> p {
 				.copy-button {
 

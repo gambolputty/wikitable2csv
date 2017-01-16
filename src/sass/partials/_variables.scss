@@ -22,7 +22,7 @@ $font-family-2: Consolas, monaco, monospace;
 
 // Font Sizes
 $font-size-large-x: rem(modular-scale(6));
-$font-size-large: rem(modular-scale(5)); 
+$font-size-large: rem(modular-scale(6)); 
 $font-size-medium: rem(modular-scale(4));
 $font-size-normal: $em-base;
 $font-size-small:rem(modular-scale(-3));
@@ -87,7 +87,7 @@ $color_text: #111;
 $color_link: #222; // 5300FF
 $color_link_h: #2b02f3;
 $color_link_a: darken($color_link_h, 20%);
-$color_grey_1: #ddd;
+$color_grey_1: #eee;
 $color_grey_2: #bbb;
 $color_red: #f20a02;
 $color_head: $color_link_h;
