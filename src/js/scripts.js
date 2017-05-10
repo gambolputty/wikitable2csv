@@ -98,13 +98,20 @@
 			$.ajax({
 				url: url, 
 				type: 'GET',
-				dataType: 'html'
+				dataType: 'text'
 			}) 
 			.done(function(html) {
 				
+				/*
+					https://en.wikipedia.org/wiki/Lists_of_earthquakes
+					https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)_per_capita
+
+				 */
+
 				console.log('Request completed');
 
-				var tables = $(html).find(table_selector);
+				var tempDom = $('<output>').append($.parseHTML(html));
+				var tables = tempDom.find(table_selector);
 
 				if ( tables.length <= 0) {
 					alert('Error: could not find any tables on page ' + wiki_url);
