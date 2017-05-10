@@ -1,49 +1,49 @@
 (function ($, root, undefined) {
 
-    var debug = false;
-    if (!debug) {
-        console.debug = function() {};
-    }
+	var debug = false;
+	if (!debug) {
+		console.log = function() {};
+	}
 
 
-    function parseCell(cell_item, options) {
+	function parseCell(cell_item, options) {
 
-    	// remove invisible elements in cells
-    	var every_el = cell_item.find('*');
-    	for (var i = 0; i < every_el.length; i++) {
-    		if ($(every_el[i]).css('display') == 'none' ) {
-    			$(every_el[i]).remove();
-    		}
-    	}
+		// remove invisible elements in cells
+		var every_el = cell_item.find('*');
+		for (var i = 0; i < every_el.length; i++) {
+			if ($(every_el[i]).css('display') == 'none' ) {
+				$(every_el[i]).remove();
+			}
+		}
 
-    	var line = cell_item.text();
+		var line = cell_item.text();
 
-    	if (options.trim === true) {
-    		line = line.trim();
-    	}
+		if (options.trim === true) {
+			line = line.trim();
+		}
 
-    	if (options.remove_n === true) {
-	    	line = line.replace(/\r?\n|\r/g, ' ');
-    	}
+		if (options.remove_n === true) {
+			line = line.replace(/\r?\n|\r/g, ' ');
+		}
 
-    	// escape double quotes in line
-    	if (/\"/.test(line)) {
-    		line = line.replace(/\"/g, '""');
-    	}
+		// escape double quotes in line
+		if (/\"/.test(line)) {
+			line = line.replace(/\"/g, '""');
+		}
 
-    	// put line in double quotes
-    	// if line break, comma or quote found in line
-    	if (/\r|\n|\"|,/.test(line)) {
-    		line = '"' + line + '"';
-    	}
+		// put line in double quotes
+		// if line break, comma or quote found in line
+		if (/\r|\n|\"|,/.test(line)) {
+			line = '"' + line + '"';
+		}
 
-    	return line;
-    }
+		return line;
+	}
 
 
-    function clearOutput() {
-    	$('#output').removeClass('output-generated').find('> .result').empty();
-    }
+	function clearOutput() {
+		$('#output').removeClass('output-generated').find('> .result').empty();
+	}
 
 
 	$(document).ready(function() {
@@ -90,10 +90,10 @@
 			// clear output
 			clearOutput();
 
-			console.debug('Title: ' + title);
-			console.debug('Domain Slug: ' + domain_slug);
-			console.debug('Table selector: ' + table_selector);
-			console.debug('URL: ' + url);
+			console.log('Title: ' + title);
+			console.log('Domain Slug: ' + domain_slug);
+			console.log('Table selector: ' + table_selector);
+			console.log('URL: ' + url);
 
 			$.ajax({
 				url: url, 
@@ -102,16 +102,18 @@
 			}) 
 			.done(function(html) {
 				
-				console.debug('Request completed');
+				console.log('Request completed');
 
-				if ( $(html).filter(table_selector).length <= 0) {
+				var tables = $(html).find(table_selector);
+
+				if ( tables.length <= 0) {
 					alert('Error: could not find any tables on page ' + wiki_url);
 					return;
 				}
 
-				$(html).filter(table_selector).each(function(idx, table_el) { 
+				tables.each(function(idx, table_el) { 
 
-					console.debug('Parsing table ' + idx);
+					console.log('Parsing table ' + idx);
 
 					var csv = '';
 					$(table_el).find('tr').each(function(index, tr_el) {
@@ -154,7 +156,7 @@
 								}
 							}
 						}else if ( el.find('td').length ) {
-							// console.debug('found TD!');
+							// console.log('found TD!');
 							var td = el.find('td');
 							var td_len = td.length;
 							new_obj = {};
@@ -192,7 +194,7 @@
 				});
 
 
-				// console.debug('Table:'); 
+				// console.log('Table:'); 
 				// console.dir(table);
 
 
@@ -220,8 +222,8 @@
 		// init clipboard functions
 		var clipboard = new Clipboard('.copy-button');
 		clipboard.on('success', function(e) {
-		    $(e.trigger).next('.copy-msg').fadeIn(200).delay(200).fadeOut(200);
-		    // e.clearSelection();
+			$(e.trigger).next('.copy-msg').fadeIn(200).delay(200).fadeOut(200);
+			// e.clearSelection();
 		});
 
 	});
