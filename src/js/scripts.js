@@ -80,7 +80,7 @@
 			var title = match[3];
 			var domain_slug = match[2];
 			var table_selector = form.find('input[name="table-selector"]').val();
-			var url = 'http://' + domain_slug + '.wikipedia.org/api/rest_v1/page/html/' + decodeURIComponent(title);
+			var url = 'http://' + domain_slug + '.wikipedia.org/api/rest_v1/page/html/' + title;
 			var options = {
 				'trim': $('#opt_trim')[0].checked,
 				'remove_n': $('#opt_remove_n')[0].checked,
