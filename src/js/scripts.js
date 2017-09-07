@@ -88,7 +88,7 @@ $(document).ready(function() {
     	return;
     }
 
-    var queryUrl = 'https://' + langSlug + '.wikipedia.org/w/index.php?title=' + title + '&action=render'
+    var queryUrl = 'https://' + langSlug + '.wikipedia.org/w/api.php?action=parse&format=json&origin=*&page=' + title + '&prop=text';
     var tableSelector = form.find('input[name="table-selector"]').val();
     var options = {
       'trim': $('#opt_trim')[0].checked,
@@ -108,9 +108,8 @@ $(document).ready(function() {
     $.ajax({
         url: queryUrl,
         type: 'GET',
-        dataType: 'text'
       })
-      .done(function(html) {
+      .done(function(resp) {
 
         /*
         	Test URLs:
@@ -119,9 +118,10 @@ $(document).ready(function() {
 					https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace
 					https://fr.wikipedia.org/w/index.php?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
          */
-
+        
         console.debug('Request completed');
-        var removedImgs = html.replace(/<img[^>]*>/g, '');
+        // remove images to prevent 404 errors in console
+        var removedImgs = resp.parse.text['*'].replace(/<img[^>]*>/g, '');
         var tempDom = $('<output>').append($.parseHTML(removedImgs));
         var tables = tempDom.find(tableSelector);
 
@@ -177,6 +177,7 @@ $(document).ready(function() {
       })
       .fail(function() {
         console.error('Error!');
+        alert('Something went wrong :(');
       })
       .always(function() {
         // console.debug("complete");
