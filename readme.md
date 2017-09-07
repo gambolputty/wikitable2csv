@@ -1,5 +1,5 @@
-# wikitable2csv
-A web tool to extract tables from Wikipedia pages and convert them to CSV. Available online [here](http://wikitable2csv.ggor.de/).
+# wikitable2csv 
+A web tool to extract tables from Wikipedia pages and convert them to CSV. Use it online [here](http://wikitable2csv.ggor.de/).
 
 ## How to use
 1. Enter the URL of the Wikipedia page containing the table(s).
