@@ -7,7 +7,6 @@ var plumber = require('gulp-plumber');
 var buffer = require('vinyl-buffer');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
-var changed = require('gulp-changed');
 var livereload = require('gulp-livereload');
 var uncss = require('gulp-uncss');
 
@@ -61,7 +60,6 @@ gulp.task('javascript', [], function() {
       base: paths.src
     })
     .pipe(plumber({ errorHandler: errorHandler }))
-    //.pipe(changed(paths.dist + '/js'))
     .pipe(concat('scripts.js'))
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(uglify())
