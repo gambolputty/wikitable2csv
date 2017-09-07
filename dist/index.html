@@ -1,56 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Wiki Table to CSV online converter</title>
-	<meta charset="UTF-8">
-	<meta name="description" content="A web tool to convert Wikipedia Tables to CSV. Enter the URL of the Wikipedia page containing the table(s). Press 'Convert' and copy the result to your clipboard.">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700" rel="stylesheet">
-	<link rel='stylesheet' href='style.css?ver=1.3' type='text/css' media='all' /> 
-	<script type='text/javascript' src='scripts.js?ver=1.3'></script>
-</head> 
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Wiki Table to CSV online converter</title>
+  <meta name="description" content="A web tool to convert Wikipedia Tables to CSV. Enter the URL of the Wikipedia page containing the table(s). Press 'Convert' and copy the result to your clipboard.">
+  <link rel='stylesheet' href='style.css?ver=1.5' type='text/css' media='all' />
+  <script type='text/javascript' src='scripts.js?ver=1.5'></script>
+</head>
 <body>
+  <div class="container">
 
-	<div id="wrapper">
-	
-		<div id="header">
-			<h1>Convert Wikipedia Tables to CSV</h1>
-			<p>Enter the URL of the Wikipedia page containing the table(s). Press "Convert" and copy the result to your clipboard.</p>
-		</div>
+    <div class="row justify-content-lg-center">
+      <div id="header" class="col-12 col-lg-9 mt-5 mb-5">
+        <h1>Convert Wikipedia Tables to CSV</h1>
+        <p>
+        	Enter the URL of the Wikipedia page containing the table(s).
+        	Press "Convert" and copy the result to your clipboard.
+        </p>
+      </div>
+    </div>
 
-		<div id="input">
+    <div class="row justify-content-lg-center mb-4">
+      <div id="input" class="col-12 col-lg-9">
+        <form>
+          <h2>Input</h2>
+          <div class="form-group row">
+            <label for="title" class="col-12 col-lg-3 col-form-label">Page URL:</label>
+            <div class="col-12 col-lg-9">
+              <input type="text" class="form-control" name="url" aria-describedby="page-url-help">
+              <small id="page-url-help" class="form-text text-muted">e.g. https://en.wikipedia.org/wiki/Lists_of_earthquakes</small>
+            </div>
+          </div>
+          <fieldset class="form-group">
+            <div class="row">
+              <legend class="col-12 col-lg-3 col-form-legend">Options</legend>
+              <div class="col-12 col-lg-9">
+                <div class="form-check">
+                  <label class="custom-control custom-checkbox form-check-label">
+                    <input type="checkbox" class="custom-control-input form-check-input" checked id="opt_trim" value="1">
+                    <span class="custom-control-indicator"></span>
+                    <span class="custom-control-description">Trim cells</span>
+                  </label>
+                </div>
+                <div class="form-check">
+	                <label class="custom-control custom-checkbox form-check-label">
+	                  <input type="checkbox" class="custom-control-input form-check-input" checked id="opt_remove_n" value="1">
+	                  <span class="custom-control-indicator"></span>
+	                  <span class="custom-control-description">Remove line breaks in cells</span>
+	                </label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <div class="form-group row">
+          	<label for="table-selector" class="col-12 col-lg-3 col-form-label">CSS table selector</label>
+            <div class="col-12 col-lg-9">
+              <input type="text" id="table-selector" class="form-control" name="table-selector" value="table.wikitable" aria-describedby="table-selector-help">
+              <small id="table-selector-help" class="form-text text-muted">Default is "table.wikitable"</small>
+            </div>
+          </div>
 
-			<form>
-				<h2>Input</h2>
+          <div class="form-group row">
+          	<div class="col">
+            	<button id="button-parse" class="btn btn-primary">Convert</button>
+          	</div>
+          </div>
+        </form>
+      </div>
+    </div>
 
-				<p><label for="title">Page URL:</label><input type="text" name="url" placeholder="e.g. https://en.wikipedia.org/wiki/Lists_of_earthquakes"></p>
+    <div class="row justify-content-lg-center mb-4">
+      <div id="output" class="col-12 col-lg-9">
+        <h2>Output <a href="javascript:void(0)">(clear)</a></h2>
+        <div class="result mt-3"></div>
+        <p class="no-output">No output generated.</p>
+      </div>
+    </div>
 
-				<fieldset>
-					<legend>Options:</legend>
-					<div class="wrap">
-						<p><label for="opt_trim">Trim cells:</label><input type="checkbox" checked id="opt_trim" value="1"></p>
-						<p><label for="opt_remove_n">Remove line breaks in cells:</label><input type="checkbox" checked id="opt_remove_n" value="1"></p>
-						<p><label for="title">CSS table selector:</label><input type="text" name="table-selector" value="table.wikitable"></p>
-					</div
->				</fieldset>
+    <div class="row justify-content-lg-center mb-5">
+    	<div class="alert alert-warning col-12 col-lg-9" role="alert">
+        	<strong>Tip:</strong> to use the data in Excel or similar spreadsheet applications
+					paste the result from your clipboard into the first cell of your spreadsheet.
+					Set the delimiter character to "comma".
+      </div>
+    </div>
 
-				<p><button id="button-parse">Convert!</button></p>
-			</form>
+    <div class="row justify-content-lg-center mb-4">
+      <div id="footer" class="col-12 col-lg-9">
+        Made by <a href="http://ggor.de" target="_blank">Gregor Weichbrodt</a>. View on <a href="https://github.com/gambolputty/wikitable2csv" target="_blank">GitHub</a>.
+      </div>
+    </div>
 
-		</div>
-
-
-		<div id="output" class="clear">
-			
-			<h2>Output <a href="javascript:void(0)">(clear)</a></h2>
-			<div class="result"></div>
-			<p class="no-output">No output generated.</p>
-		</div>
-
-		<div id="footer">
-			Made by <a href="http://ggor.de" target="_blank">Gregor Weichbrodt</a>. View on <a href="https://github.com/gambolputty/wikitable2csv" target="_blank">GitHub</a>.
-		</div>
-
-	</div>
-
+  </div>
 </body>
 </html>
