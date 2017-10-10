@@ -9,6 +9,7 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var livereload = require('gulp-livereload');
 var uncss = require('gulp-uncss');
+var inject = require('gulp-inject');
 
 var paths = {
   src: 'src',
@@ -21,9 +22,7 @@ function errorHandler(error) {
     title: 'Gulp Task Error',
     message: 'Check the console.'
   }).write(error);
-
   console.log(error.toString());
-
   this.emit('end');
 }
 
@@ -31,14 +30,22 @@ function errorHandler(error) {
 gulp.task('lint', function() {
   gulp.src(paths.src + '/js/*.js')
     .pipe(jshint())
-    // You can look into pretty reporters as well, but that's another story
     .pipe(jshint.reporter('jshint-stylish'));
 });
 
 gulp.task('views', [], function() {
 
-  // php html
-  gulp.src(paths.src + "/*.{html,php}")
+  // Inject additional header markup (piwik code)
+  gulp.src(paths.src + '/index.html')
+    .pipe(inject(gulp.src(paths.src + '/piwik_inject.html'), {
+      starttag: '<!-- inject:head:{{ext}} -->',
+      removeTags: true,
+      transform: function (filePath, file) {
+        // return file contents as string
+        return file.contents.toString('utf8')
+      }
+    }))
+    // copy html files
     .pipe(gulp.dest(paths.dist))
     .pipe(livereload());
 
@@ -78,10 +85,9 @@ gulp.task('sass', function() {
       .on('error', errorHandler))
     .pipe(uncss({
         html: [paths.src + '/index.html'],
-        ignore: [/\#output.+/, /\.btn\-.+/, /h\d/, /\.[mp][trbl]\-\d/, /\.alert.*/]
+        ignore: [/\.table2csv/, /\.btn\-.+/, /h\d/, /\.[mp][trbl]\-\d/, /\.alert.*/]
     }))
     .pipe(gulp.dest(paths.dist));
-
 
 });
 
@@ -92,14 +98,12 @@ gulp.task('clean:images', [], function() {
   ], { force: true });
 });
 
-
 gulp.task('images', [], function() {
   gulp.src(paths.src + '/img/**/*.{jpg,png,svg,gif,webp,ico}', {
       base: paths.src
     })
     .pipe(gulp.dest(paths.dist))
     .pipe(livereload());
-
 });
 
 
@@ -111,7 +115,7 @@ gulp.task('watch', function() {
   livereload.listen();
 
   gulp.watch([
-    paths.src + "/*.{html,php}",
+    paths.src + "/*.{html}",
   ], ['views']);
 
   gulp.watch([

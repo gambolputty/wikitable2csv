@@ -38,21 +38,21 @@ function parseCell(cellItem, options) {
 }
 
 function clearOutput() {
-  $('#output').removeClass('output-generated').find('> .result').empty();
+  $('.table2csv-output').removeClass('table2csv-output--active').find('.table2csv-output__result').empty();
 }
 
 $(document).ready(function() {
 
-  var form = $('form');
+  var form = $('.table2csv-form');
 
   /*
   	Parse-Button
    */
 
-  $('#button-parse').click(function(event) {
+  $('.table2csv-form__btn-submit').click(function(event) {
     event.preventDefault();
     
-    var urlVal = form.find('input[name="url"]').val().trim();
+    var urlVal = form.find('.table2csv-form__url-input').val().trim();
     var title = null;
     var langSlug = null;
 
@@ -89,10 +89,10 @@ $(document).ready(function() {
     }
 
     var queryUrl = 'https://' + langSlug + '.wikipedia.org/w/api.php?action=parse&format=json&origin=*&page=' + title + '&prop=text';
-    var tableSelector = form.find('input[name="table-selector"]').val();
+    var tableSelector = form.find('.table2csv-form__table-selector').val();
     var options = {
-      'trim': $('#opt_trim')[0].checked,
-      'remove_n': $('#opt_remove_n')[0].checked,
+      'trim': $('.table2csv-form__trim')[0].checked,
+      'remove_n': $('.table2csv-form__remove-n')[0].checked,
     };
 
 
@@ -162,15 +162,15 @@ $(document).ready(function() {
           });
 
           var blockId = idx + 1;
-          var csvContainer = '<div class="output-block mb-5">' +
+          var csvContainer = '<div class="mb-5">' +
             '<h5>Table ' + blockId + '</h5>' +
-            '<textarea id="copytarget-' + blockId + '" class="form-control" rows="7">' + csv + '</textarea>' +
+            '<textarea id="copytarget-' + blockId + '" class="table2csv-output__csv form-control" rows="7">' + csv + '</textarea>' +
             '<div class="mt-2">' +
-            '<button class="btn btn-outline-primary copy-button" data-clipboard-target="#copytarget-' + blockId + '">Copy to clipboard</button>' +
-            '<span class="copy-msg">Copied!</span>' +
+            '<button class="table2csv-output__copy-btn btn btn-outline-primary" data-clipboard-target="#copytarget-' + blockId + '">Copy to clipboard</button>' +
+            '<span class="table2csv-output__copy-msg">Copied!</span>' +
             '</div>' +
             '</div>';
-          $('#output').addClass('output-generated').find('> .result').append(csvContainer);
+          $('.table2csv-output').addClass('table2csv-output--active').find('.table2csv-output__result').append(csvContainer);
 
         });
 
@@ -187,16 +187,16 @@ $(document).ready(function() {
     return false;
   });
 
-  $('#output h2 a').click(function(event) {
+  $('.table2csv-output__clear-btn').click(function(event) {
     // clear output
     clearOutput();
     return false;
   });
 
   // init clipboard functions
-  var clipboard = new Clipboard('.copy-button');
+  var clipboard = new Clipboard('.table2csv-output__copy-btn');
   clipboard.on('success', function(e) {
-    $(e.trigger).next('.copy-msg').fadeIn(200).delay(200).fadeOut(200);
+    $(e.trigger).next('.table2csv-output__copy-msg').fadeIn(200).delay(200).fadeOut(200);
     // e.clearSelection();
   });
 

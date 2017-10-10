@@ -7,10 +7,9 @@
   <meta name="description" content="A web tool to convert Wikipedia Tables to CSV. Enter the URL of the Wikipedia page containing the table(s). Press 'Convert' and copy the result to your clipboard.">
   <link rel='stylesheet' href='style.css?ver=1.5' type='text/css' media='all' />
   <script type='text/javascript' src='scripts.js?ver=1.5'></script>
-  <!-- Piwik -->
+    <!-- Piwik -->
   <script type="text/javascript">
     var _paq = _paq || [];
-    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
     (function() {
@@ -25,10 +24,10 @@
   <!-- End Piwik Code -->
 </head>
 <body>
-  <div class="container">
+  <div class="table2csv container">
 
  	  <div class="row justify-content-lg-center">
-      <div id="header" class="col-12 col-lg-9 mt-5 mb-5">
+      <div class="col-12 col-lg-9 mt-5 mb-5">
         <h1>Convert Wikipedia Tables to CSV</h1>
         <p>
         	Enter the URL of the Wikipedia page containing the table(s).
@@ -38,14 +37,14 @@
     </div>
 
     <div class="row justify-content-lg-center mb-4">
-      <div id="input" class="col-12 col-lg-9">
-        <form>
+      <div class="col-12 col-lg-9">
+        <form class="table2csv-form">
           <h2>Input</h2>
           <div class="form-group row">
-            <label for="title" class="col-12 col-lg-3 col-form-label">Page URL:</label>
+            <label for="table2csv-url" class="col-12 col-lg-3 col-form-label">Page URL:</label>
             <div class="col-12 col-lg-9">
-              <input type="text" class="form-control" name="url" aria-describedby="page-url-help">
-              <small id="page-url-help" class="form-text text-muted">e.g. https://en.wikipedia.org/wiki/Lists_of_earthquakes</small>
+              <input type="text" id="table2csv-url" class="table2csv-form__url-input form-control" name="url" aria-describedby="url-input-help">
+              <small id="url-input-help" class=" form-text text-muted">e.g. https://en.wikipedia.org/wiki/Lists_of_earthquakes</small>
             </div>
           </div>
           <fieldset class="form-group">
@@ -54,14 +53,14 @@
               <div class="col-12 col-lg-9">
                 <div class="form-check">
                   <label class="custom-control custom-checkbox form-check-label">
-                    <input type="checkbox" class="custom-control-input form-check-input" checked id="opt_trim" value="1">
+                    <input type="checkbox" class="table2csv-form__trim custom-control-input form-check-input" checked value="1">
                     <span class="custom-control-indicator"></span>
                     <span class="custom-control-description">Trim cells</span>
                   </label>
                 </div>
                 <div class="form-check">
 	                <label class="custom-control custom-checkbox form-check-label">
-	                  <input type="checkbox" class="custom-control-input form-check-input" checked id="opt_remove_n" value="1">
+	                  <input type="checkbox" class="table2csv-form__remove-n custom-control-input form-check-input" checked value="1">
 	                  <span class="custom-control-indicator"></span>
 	                  <span class="custom-control-description">Remove line breaks in cells</span>
 	                </label>
@@ -72,14 +71,14 @@
           <div class="form-group row">
           	<label for="table-selector" class="col-12 col-lg-3 col-form-label">CSS table selector</label>
             <div class="col-12 col-lg-9">
-              <input type="text" id="table-selector" class="form-control" name="table-selector" value="table.wikitable" aria-describedby="table-selector-help">
+              <input type="text" id="table-selector" class="table2csv-form__table-selector form-control" name="table-selector" value="table.wikitable" aria-describedby="table-selector-help">
               <small id="table-selector-help" class="form-text text-muted">Default is "table.wikitable"</small>
             </div>
           </div>
 
           <div class="form-group row">
           	<div class="col">
-            	<button id="button-parse" class="btn btn-primary">Convert</button>
+            	<button class="table2csv-form__btn-submit btn btn-primary">Convert</button>
           	</div>
           </div>
         </form>
@@ -87,10 +86,10 @@
     </div>
 
     <div class="row justify-content-lg-center mb-4">
-      <div id="output" class="col-12 col-lg-9">
-        <h2>Output <a href="javascript:void(0)">(clear)</a></h2>
-        <div class="result mt-3"></div>
-        <p class="no-output">No output generated.</p>
+      <div class="table2csv-output col-12 col-lg-9">
+        <h2>Output <a class="table2csv-output__clear-btn" href="javascript:void(0)">(clear)</a></h2>
+        <div class="table2csv-output__result mt-3"></div>
+        <p class="table2csv-output__no-output">No output generated.</p>
       </div>
     </div>
 
@@ -103,7 +102,7 @@
     </div>
 
     <div class="row justify-content-lg-center mb-4">
-      <div id="footer" class="col-12 col-lg-9">
+      <div class="col-12 col-lg-9">
         Made by <a href="http://ggor.de" target="_blank">Gregor Weichbrodt</a>. View on <a href="https://github.com/gambolputty/wikitable2csv" target="_blank">GitHub</a>.
       </div>
     </div>
