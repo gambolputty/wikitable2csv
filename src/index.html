@@ -23,21 +23,21 @@
       </div>
     </div>
 
-    <div class="row justify-content-lg-center mb-4">
+    <div class="row justify-content-lg-center mb-2">
       <div class="col-12 col-lg-9">
-        <form class="table2csv-form">
+        <form class="table2csv-form mb-4">
           <h2>Input</h2>
           <div class="form-group row">
-            <label for="table2csv-url" class="col-12 col-lg-3 col-form-label">Page URL:</label>
-            <div class="col-12 col-lg-9">
+            <label for="table2csv-url" class="col-12 col-sm-3 col-form-label">Page URL:</label>
+            <div class="col-12 col-sm-9">
               <input type="text" id="table2csv-url" class="table2csv-form__url-input form-control" name="url" aria-describedby="url-input-help">
               <small id="url-input-help" class=" form-text text-muted">e.g. https://en.wikipedia.org/wiki/Lists_of_earthquakes</small>
             </div>
           </div>
           <fieldset class="form-group">
             <div class="row">
-              <legend class="col-12 col-lg-3 col-form-legend">Options</legend>
-              <div class="col-12 col-lg-9">
+              <legend class="col-12 col-sm-3 col-form-legend">Options</legend>
+              <div class="col-12 col-sm-9">
                 <div class="form-check">
                   <label class="custom-control custom-checkbox form-check-label">
                     <input type="checkbox" class="table2csv-form__trim custom-control-input form-check-input" checked value="1">
@@ -56,8 +56,8 @@
             </div>
           </fieldset>
           <div class="form-group row">
-          	<label for="table-selector" class="col-12 col-lg-3 col-form-label">CSS table selector</label>
-            <div class="col-12 col-lg-9">
+          	<label for="table-selector" class="col-12 col-sm-3 col-form-label">CSS table selector</label>
+            <div class="col-12 col-sm-9">
               <input type="text" id="table-selector" class="table2csv-form__table-selector form-control" name="table-selector" value="table.wikitable" aria-describedby="table-selector-help">
               <small id="table-selector-help" class="form-text text-muted">Default is "table.wikitable"</small>
             </div>
@@ -69,8 +69,10 @@
           	</div>
           </div>
         </form>
+        <hr/>
       </div>
     </div>
+
 
     <div class="row justify-content-lg-center mb-4">
       <div class="table2csv-output col-12 col-lg-9">

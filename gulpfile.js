@@ -115,8 +115,8 @@ gulp.task('watch', function() {
   livereload.listen();
 
   gulp.watch([
-    paths.src + "/*.{html}",
-  ], ['views']);
+    paths.src + "/*.html",
+  ], ['views', 'sass']);
 
   gulp.watch([
     paths.src + '/js/*.js',
