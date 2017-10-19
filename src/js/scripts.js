@@ -14,7 +14,6 @@ function parseCell(cellItem, options) {
   }
 
   var line = cellItem.text();
-
   if (options.trim === true) {
     line = line.trim();
   }
@@ -34,7 +33,15 @@ function parseCell(cellItem, options) {
     line = '"' + line + '"';
   }
 
-  return line;
+  var row_span = cellItem.attr('rowSpan');
+  if (!row_span) {
+    row_span = 1;
+  }
+  var col_span = cellItem.attr('colSpan');
+  if (!col_span) {
+    col_span = 1;
+  }
+  return [line, row_span, col_span];
 }
 
 function clearOutput() {
@@ -51,7 +58,7 @@ $(document).ready(function() {
 
   $('.table2csv-form__btn-submit').click(function(event) {
     event.preventDefault();
-    
+
     var urlVal = form.find('.table2csv-form__url-input').val().trim();
     var title = null;
     var langSlug = null;
@@ -118,7 +125,7 @@ $(document).ready(function() {
 					https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace
 					https://fr.wikipedia.org/w/index.php?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
          */
-        
+
         console.debug('Request completed');
         // remove images to prevent 404 errors in console
         var removedImgs = resp.parse.text['*'].replace(/<img[^>]*>/g, '');
@@ -135,6 +142,8 @@ $(document).ready(function() {
           console.debug('Parsing table ' + idx);
 
           var csv = '';
+          var row_spans = {};
+          var print_debug = false;
           $(table_el).find('tr').each(function(index, tr_el) {
 
             var el = $(tr_el);
@@ -145,18 +154,38 @@ $(document).ready(function() {
 
 
               var row_len = row.length;
-              for (var i = 0; i < row_len; i++) {
-                parsed_cell = parseCell($(row[i]), options);
+              var i = 0;
+              var row_i = 0;
+              var csvLine = [];
+              while (row_i < row_len) {
+                  parsed_cell = parseCell($(row[row_i]), options);
+                  var new_row_span = parsed_cell[1];
+                  var col_span = parsed_cell[2];
+                  parsed_cell = parsed_cell[0];
 
-                var csvLine = parsed_cell;
+                  for (j = 0; j < col_span; j++) {
+                      while (row_spans.hasOwnProperty(i.toString())) {
+                          var num_left = row_spans[i.toString()][0];
+                          var val = row_spans[i.toString()][1];
+                          csvLine.push(val);
 
-                if (i == (row_len - 1)) {
-                  csv += csvLine + '\n';
-                } else {
-                  csv += csvLine + ',';
-                }
+                          row_spans[i.toString()][0] -= 1;
+                          if (row_spans[i.toString()][0] == 0) {
+                              delete row_spans[i.toString()];
+                          }
+                          i += 1;
+                      }
+                      csvLine.push(parsed_cell);
+                      if (new_row_span > 1) {
+                          row_spans[i.toString()] = [new_row_span - 1, parsed_cell];
+                      }
+                      i += 1;
+                  }
+                  row_i += 1;
               }
-
+              csvLine = csvLine.join();
+              csvLine += '\n';
+              csv += csvLine;
             }
 
           });
