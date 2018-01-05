@@ -10,6 +10,9 @@ var uglify = require('gulp-uglify');
 var livereload = require('gulp-livereload');
 var uncss = require('gulp-uncss');
 var inject = require('gulp-inject');
+var replace = require('gulp-replace');
+var fs = require('fs');
+var version = JSON.parse(fs.readFileSync('./package.json')).version;
 
 var paths = {
   src: 'src',
@@ -34,9 +37,10 @@ gulp.task('lint', function() {
 });
 
 gulp.task('views', [], function() {
-
-  // Inject additional header markup (piwik code)
   gulp.src(paths.src + '/index.html')
+    // Inject version number
+    .pipe(replace('%%GULP_INJECT_VERSION%%', version))
+    // Inject piwik code
     .pipe(inject(gulp.src(paths.src + '/piwik_inject.html'), {
       starttag: '<!-- inject:head:{{ext}} -->',
       removeTags: true,
@@ -52,23 +56,20 @@ gulp.task('views', [], function() {
 });
 
 gulp.task('javascript', [], function() {
-
   gulp.src([
 
       // Vendor
-      paths.npm + '/jquery/dist/jquery.js',
       paths.npm + '/clipboard/dist/clipboard.js',
 
-      // scripts
-      // paths.src + '/js/wikis.js',
-      paths.src + '/js/scripts.js',
+      // app
+      paths.src + '/js/helper.js',      
+      paths.src + '/js/methods.js',      
+      paths.src + '/js/app.js',      
 
     ], {
       base: paths.src
     })
-    .pipe(plumber({ errorHandler: errorHandler }))
-    .pipe(concat('scripts.js'))
-    .pipe(plumber({ errorHandler: errorHandler }))
+    .pipe(concat('app.js'))
     .pipe(uglify())
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(gulp.dest(paths.dist))
@@ -76,7 +77,6 @@ gulp.task('javascript', [], function() {
 });
 
 gulp.task('sass', function() {
-
   gulp.src(paths.src + '/sass/style.scss')
     .pipe(sass({
         outputStyle: 'compressed',
@@ -88,7 +88,6 @@ gulp.task('sass', function() {
         ignore: [/\.table2csv/, /\.btn\-.+/, /h\d/, /\.[mp][trbl]\-\d/, /\.alert.*/]
     }))
     .pipe(gulp.dest(paths.dist));
-
 });
 
 // Clean Images
