@@ -11,6 +11,9 @@ var livereload = require('gulp-livereload');
 var uncss = require('gulp-uncss');
 var inject = require('gulp-inject');
 var replace = require('gulp-replace');
+var jasmineBrowser = require('gulp-jasmine-browser');
+var watch = require('gulp-watch');
+
 var fs = require('fs');
 var version = JSON.parse(fs.readFileSync('./package.json')).version;
 
@@ -29,19 +32,10 @@ function errorHandler(error) {
   this.emit('end');
 }
 
-// JSHint task
-gulp.task('lint', function() {
-  gulp.src(paths.src + '/js/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'));
-});
-
-gulp.task('views', [], function() {
+gulp.task('testFixtures', function() {
   gulp.src(paths.src + '/index.html')
-    // Inject version number
-    .pipe(replace('%%GULP_INJECT_VERSION%%', version))
-    // Inject piwik code
-    .pipe(inject(gulp.src(paths.src + '/piwik_inject.html'), {
+    // Inject head html
+    .pipe(inject(gulp.src(paths.src + '/head.html'), {
       starttag: '<!-- inject:head:{{ext}} -->',
       removeTags: true,
       transform: function (filePath, file) {
@@ -49,10 +43,43 @@ gulp.task('views', [], function() {
         return file.contents.toString('utf8')
       }
     }))
+    .pipe(replace('%%GULP_INJECT_PATH%%', 'spec/fixtures'))
+    .pipe(replace('%%GULP_INJECT_VERSION%%', version))
+    // copy html files
+    .pipe(gulp.dest('spec/fixtures'));
+  gulp.src([paths.dist + '/app.js', paths.dist + '/style.css',])
+    .pipe(gulp.dest('spec/fixtures'));
+});   
+
+gulp.task('test', ['testFixtures'], function() {
+  var filesForTest = [
+    paths.npm + '/jquery/dist/jquery.js',
+    paths.npm + '/jasmine-jquery/lib/jasmine-jquery.js',
+    'spec/fixtures/*',
+    'spec/app_spec.js'
+  ];
+  return gulp.src(filesForTest, { base: '.' })
+    .pipe(watch(filesForTest, { base: '.' }))
+    .pipe(jasmineBrowser.specRunner())
+    .pipe(jasmineBrowser.server({port: 8888}));
+});
+
+gulp.task('views', [], function() {
+  gulp.src(paths.src + '/index.html')
+    // Inject head html
+    .pipe(inject(gulp.src(paths.src + '/head.html'), {
+      starttag: '<!-- inject:head:{{ext}} -->',
+      removeTags: true,
+      transform: function (filePath, file) {
+        // return file contents as string
+        return file.contents.toString('utf8')
+      }
+    }))
+    .pipe(replace('%%GULP_INJECT_PATH%%', ''))
+    .pipe(replace('%%GULP_INJECT_VERSION%%', version))
     // copy html files
     .pipe(gulp.dest(paths.dist))
     .pipe(livereload());
-
 });
 
 gulp.task('javascript', [], function() {

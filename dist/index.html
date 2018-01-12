@@ -6,7 +6,22 @@
   <title>Wiki Table to CSV online converter</title>
   <meta name="description" content="A web tool to convert Wikipedia Tables to CSV. Enter the URL of the Wikipedia page containing the table(s). Press 'Convert' and copy the result to your clipboard.">
   <link rel='stylesheet' href='style.css?ver=1.9.0' type='text/css' media='all' />
-  <script type='text/javascript' src='app.js?ver=1.9.0'></script>
+<script type='text/javascript' src='app.js?ver=1.9.0'></script>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://piwik.ggor.de/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '3']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="https://piwik.ggor.de/piwik.php?idsite=3&rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
   <script type="text/javascript">
     function ready(fn) {
       if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading")
@@ -18,21 +33,6 @@
       app.init();
     });
   </script>
-    <!-- Piwik -->
-  <script type="text/javascript">
-    var _paq = _paq || [];
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function() {
-      var u="https://piwik.ggor.de/";
-      _paq.push(['setTrackerUrl', u+'piwik.php']);
-      _paq.push(['setSiteId', '3']);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-    })();
-  </script>
-  <noscript><p><img src="https://piwik.ggor.de/piwik.php?idsite=3&rec=1" style="border:0;" alt="" /></p></noscript>
-  <!-- End Piwik Code -->
 </head>
 <body>
   <div class="table2csv container">
