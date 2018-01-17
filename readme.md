@@ -8,8 +8,6 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Use i
 
 **Tip:** to use the data in Excel or similar spreadsheet applications paste the result from your clipboard into the first cell of your spreadsheet. Set the delimiter character to "comma".
 
-Vendor packages: [Bootstrap](https://getbootstrap.com/) and [clipboard.js](https://github.com/zenorocha/clipboard.js/)
-
 ## Changelog
 ### 2.1.0
 - parsing row- and col-span-attributes, thanks to [@bschreck](https://github.com/bschreck)
