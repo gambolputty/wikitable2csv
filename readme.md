@@ -9,6 +9,8 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Use i
 Vendor packages: [Bootstrap](https://getbootstrap.com/) and [clipboard.js](https://github.com/zenorocha/clipboard.js/)
 
 ## Changelog
+### 2.1.0
+- parsing row- and col-span-attributes, thanks to @bschreck
 ### 2.0.0
 - Parsing tables from other Wikis (Wikimedia.org, Wikibooks.org etc.)
 - added button to copy all tables at once (concat textareas value, seperated by empty line)

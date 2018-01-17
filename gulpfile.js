@@ -15,6 +15,7 @@ var watch = require('gulp-watch');
 
 var fs = require('fs');
 var version = JSON.parse(fs.readFileSync('./package.json')).version;
+var debug = false;
 
 var paths = {
   src: 'src',
@@ -82,7 +83,7 @@ gulp.task('views', [], function() {
 });
 
 gulp.task('javascript', [], function() {
-  gulp.src([
+  var stream = gulp.src([
 
       // Vendor
       paths.npm + '/clipboard/dist/clipboard.js',
@@ -95,8 +96,14 @@ gulp.task('javascript', [], function() {
     ], {
       base: paths.src
     })
-    .pipe(concat('app.js'))
-    .pipe(uglify())
+    .pipe(replace('%%GULP_INJECT_DEBUG%%', debug))
+    .pipe(concat('app.js'));
+
+  if (debug == false) {
+    stream.pipe(uglify());
+  }
+
+  stream
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(gulp.dest(paths.dist))
     .pipe(livereload());

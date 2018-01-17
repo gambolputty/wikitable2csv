@@ -40,7 +40,17 @@ var app = ( function( parent ) {
       line = '"' + line + '"';
     }
 
-    return line;
+    // check for rowSpan attr
+    var rowSpan = cellItem.getAttribute('rowSpan');
+    if (!rowSpan)
+      rowSpan = 1;
+
+    // check for colSpan attr
+    var colSpan = cellItem.getAttribute('colSpan');
+    if (!colSpan)
+      colSpan = 1;
+
+    return [line, rowSpan, colSpan];
   }
 
   function copyMsgAnimation( e ) {
@@ -97,33 +107,57 @@ var app = ( function( parent ) {
           // loop tables
           var tablesLen = tables.length;
           for ( var i = 0; i < tablesLen; i++ ) {
-            var table_el = tables[ i ];
 
             console.debug( 'Parsing table ' + i );
 
             // loop rows
+            var tableEl = tables[ i ];
             var csv = '';
-            var rows = table_el.querySelectorAll( 'tr' );
+            var rows = tableEl.querySelectorAll( 'tr' );
             var rowsLen = rows.length;
+            var rowSpans = {};
             for ( var x = 0; x < rowsLen; x++ ) {
-              var parsedCell = '';
               var row = rows[ x ];
 
-              if ( row.querySelectorAll( 'th, td' ).length ) {
-                var cells = row.querySelectorAll( 'th, td' );
+              // loop cells
+              var csvLine = [];
+              var cells = row.querySelectorAll( 'th, td' );
+              var cellsLen = cells.length;
+              var rowSpanIdx = 0;
 
-                // loop cells
-                var cellsLen = cells.length;
-                for ( var y = 0; y < cellsLen; y++ ) {
-                  parsedCell = parseCell( cells[ y ], options );
-                  var csvLine = parsedCell;
-                  if ( y == ( cellsLen - 1 ) ) {
-                    csv += csvLine + '\n';
-                  } else {
-                    csv += csvLine + ',';
+              if ( !cells )
+                continue;
+
+              for ( var y = 0; y < cellsLen; y++ ) {
+                var parsedCell = parseCell( cells[ y ], options );
+                var cellText = parsedCell[ 0 ];
+                var new_row_span = parsedCell[ 1 ];
+                var col_span = parsedCell[ 2 ];
+                
+                // loop colSpan
+                // credits: @bschreck
+                // based on pull request: https://github.com/gambolputty/wikitable2csv/pull/6
+                for ( j = 0; j < col_span; j++ ) {
+                  while ( rowSpans.hasOwnProperty( rowSpanIdx.toString() ) ) {
+                    // var num_left = rowSpans[ rowSpanIdx.toString() ][ 0 ];
+                    var val = rowSpans[ rowSpanIdx.toString() ][ 1 ];
+                    csvLine.push( val );
+
+                    rowSpans[ rowSpanIdx.toString() ][ 0 ] -= 1;
+                    if ( rowSpans[ rowSpanIdx.toString() ][ 0 ] == 0 ) {
+                      delete rowSpans[ rowSpanIdx.toString() ];
+                    }
+                    rowSpanIdx += 1;
                   }
+                  csvLine.push( cellText );
+                  if ( new_row_span > 1 ) {
+                    rowSpans[ rowSpanIdx.toString() ] = [ new_row_span - 1, cellText ];
+                  }
+                  rowSpanIdx += 1;
                 }
               }
+              csv += csvLine.join() + '\n';
+              
             }
 
             var blockId = i + 1;

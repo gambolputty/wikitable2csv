@@ -5,4 +5,4 @@ npm-debug.log
 *.sublime-workspace
 *.sublime-project
 *.sublime-gulp.cache
-piwik_tracking_code.txt
+!spec/fixtures

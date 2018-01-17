@@ -1,4 +1,4 @@
-var debug = false;
+var debug = %%GULP_INJECT_DEBUG%%;
 if (!debug) {
   console.debug = function() {};
 }
