@@ -10,7 +10,7 @@ Vendor packages: [Bootstrap](https://getbootstrap.com/) and [clipboard.js](https
 
 ## Changelog
 ### 2.1.0
-- parsing row- and col-span-attributes, thanks to @bschreck
+- parsing row- and col-span-attributes, thanks to [@bschreck](https://github.com/bschreck)
 ### 2.0.0
 - Parsing tables from other Wikis (Wikimedia.org, Wikibooks.org etc.)
 - added button to copy all tables at once (concat textareas value, seperated by empty line)
