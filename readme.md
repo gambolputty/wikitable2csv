@@ -9,8 +9,15 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Use i
 Vendor packages: [Bootstrap](https://getbootstrap.com/) and [clipboard.js](https://github.com/zenorocha/clipboard.js/)
 
 ## Changelog
-1.9.0
-Code refactoring: Vanilla JS (removed jQuery), module pattern, better performance, preparing for version 2
+### 2.0.0
+- Parsing tables from other Wikis (Wikimedia.org, Wikibooks.org etc.)
+- added button to copy all tables at once (concat textareas value, seperated by empty line)
+- updated dependencies in package.json
+- additional acceptance tests
+### 1.9.0
+- Code refactoring: Vanilla JS (removed jQuery), module pattern
+- better performance
+- preparing for version 2
 
 ## License
 [MIT](https://github.com/gambolputty/wikitable2csv/blob/master/LICENSE) © Gregor Weichbrodt

@@ -6,6 +6,7 @@ var app = ( function( parent ) {
 
   function clearOutput() {
     parent.helper.removeClass( '.table2csv-output', 'table2csv-output--active' );
+    document.querySelector( '.table2csv-output__controls' ).innerHTML = '';
     document.querySelector( '.table2csv-output__result' ).innerHTML = '';
   }
 
@@ -40,6 +41,36 @@ var app = ( function( parent ) {
     }
 
     return line;
+  }
+
+  function copyMsgAnimation( e ) {
+    // fade in/out copy msg
+    var copyMsg = e.trigger.nextElementSibling;
+    parent.helper.fadeIn( copyMsg, 'inline-block' );
+    setTimeout( function() {
+      parent.helper.fadeOut( copyMsg );
+    }, 300 );
+    // e.clearSelection();
+  }
+
+  function concatAllTables() {
+    // concat tables from textareas
+    var text = '';
+    var textareas = document.querySelectorAll( '.table2csv-output__csv' );
+    var textareasLen = textareas.length;
+    var lastIdx = textareasLen - 1;
+    for ( var i = 0; i < textareasLen; i++ ) {
+      text += textareas[ i ].value;
+      if ( i !== lastIdx )
+        text += '\n';
+    }
+    return text;
+  }
+
+  function clearBtnCb( e ) {
+    // clear output
+    clearOutput();
+    return false;
   }
 
   function sendRequest( queryUrl, options ) {
@@ -106,7 +137,29 @@ var app = ( function( parent ) {
               '</div>';
             parent.helper.addClass( '.table2csv-output', 'table2csv-output--active' );
             document.querySelector( '.table2csv-output__result' ).insertAdjacentHTML( 'beforeend', csvContainer );
+            
+            // loop tables END
+          }
 
+          // insert clear output button
+          var clearBtn = '<button class="table2csv-output__clear-btn btn btn-outline-primary">Clear Output</button>';
+          document.querySelector( '.table2csv-output__controls' ).insertAdjacentHTML( 'beforeend', clearBtn );
+          document.querySelector( '.table2csv-output__clear-btn' ).addEventListener('click', clearBtnCb);
+
+          // init clipboard functions
+          var clipboard = new Clipboard( '.table2csv-output__copy-btn' );
+          clipboard.on( 'success', copyMsgAnimation );
+
+          // insert copy all button
+          if ( tablesLen > 1 ) {
+            var copyAllBtn = '<button class="table2csv-output__copy-all-btn btn btn-outline-primary">Copy all tables to clipboard</button>' + 
+                             '<span class="table2csv-output__copy-msg">Copied!</span>';
+            document.querySelector( '.table2csv-output__controls' ).insertAdjacentHTML( 'beforeend', copyAllBtn );
+            // init clipboard fn
+            var clipboardAll = new Clipboard( '.table2csv-output__copy-all-btn', {
+              text: concatAllTables
+            } );
+            clipboardAll.on( 'success', copyMsgAnimation );
           }
 
         } else {
@@ -125,61 +178,40 @@ var app = ( function( parent ) {
     public methods
    */
 
-  parent.copyMsgAnimation = function( e ) {
-    // fade in/out copy msg
-    var copyMsg = e.trigger.nextElementSibling;
-    parent.helper.fadeIn( copyMsg, 'inline-block' );
-    setTimeout( function() {
-      parent.helper.fadeOut( copyMsg );
-    }, 200 );
-    // e.clearSelection();
-  }
-
-  parent.clearBtnCb = function( e ) {
-    // clear output
-    clearOutput();
-    return false;
-  }
-
   parent.submitClickCb = function( e ) {
     e.preventDefault();
     var urlVal = parent.form.querySelector( '.table2csv-form__url-input' ).value.trim();
     var title = null;
-    var langSlug = null;
+    var domain = null;
 
     // Parse Url
-    // Accept schemes:
-    // 1. https://en.wikipedia.org/wiki/Lists_of_earthquakes
-    // 2. https://fr.wikipedia.org/w/index.php?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
-    var urlMatch = urlVal.match( /^https?\:\/{2}(\w+)\.wikipedia\.org\/(wiki\/|w\/index\.php)(.+)$/ );
+    var urlMatch = urlVal.match( /^https?\:\/{2}(\w+\.\w+\.org)\/(wiki\/|w\/index\.php)(.+)$/ );
     if ( urlMatch != null ) {
 
-      // lang slug
-      langSlug = urlMatch[ 1 ];
+      domain = urlMatch[ 1 ];
 
-      // title
+      // get title
       if ( /^wiki\/$/.test( urlMatch[ 2 ] ) ) {
-        // scheme 1
+        // 1. https://en.wikipedia.org/wiki/Lists_of_earthquakes
         var matchTitle = urlMatch[ 3 ].match( /^([^&\#]+)/ )
         if ( matchTitle != null ) {
           title = matchTitle[ 1 ];
         }
       } else if ( /^w\/index\.php$/.test( urlMatch[ 2 ] ) ) {
-        // scheme 2
+        // 2. https://fr.wikipedia.org/w/index.php?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
         var matchTitle = urlMatch[ 3 ].match( /title\=([^&\#]+)/ )
         if ( matchTitle != null ) {
           title = matchTitle[ 1 ];
         }
       }
-
     }
 
-    if ( urlMatch == null || title == null || langSlug == null ) {
+    if ( urlMatch == null || title == null || domain == null ) {
       alert( 'Error parsing Wikipedia url. Please enter a valid Wikipedia url (e. g. https://en.wikipedia.org/wiki/List_of_airports)' );
       return;
     }
 
-    var queryUrl = 'https://' + langSlug + '.wikipedia.org/w/api.php?action=parse&format=json&origin=*&page=' + title + '&prop=text';
+    var queryUrl = 'https://' + domain + '/w/api.php?action=parse&format=json&origin=*&page=' + title + '&prop=text';
     var options = {
       trim: document.querySelector( '.table2csv-form__trim' ).checked,
       remove_n: document.querySelector( '.table2csv-form__remove-n' ).checked,
@@ -191,18 +223,10 @@ var app = ( function( parent ) {
     clearOutput();
 
     console.debug( 'Title: ' + title );
-    console.debug( 'Lang Slug: ' + langSlug );
     console.debug( 'URL: ' + queryUrl );
     console.debug( 'Options', options );
 
     // send request
-    /*
-      Test URLs:
-      https://en.wikipedia.org/wiki/Lists_of_earthquakes
-      https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)_per_capita
-      https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace
-      https://fr.wikipedia.org/w/index.php?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
-     */
     sendRequest( queryUrl, options );
 
     return false;

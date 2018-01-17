@@ -4,7 +4,6 @@ var sass = require('gulp-sass')
 var jshint = require('gulp-jshint');
 var notify = require("gulp-notify");
 var plumber = require('gulp-plumber');
-var buffer = require('vinyl-buffer');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var livereload = require('gulp-livereload');
@@ -43,7 +42,7 @@ gulp.task('testFixtures', function() {
         return file.contents.toString('utf8')
       }
     }))
-    .pipe(replace('%%GULP_INJECT_PATH%%', 'spec/fixtures'))
+    .pipe(replace('%%GULP_INJECT_PATH%%', 'spec/fixtures/'))
     .pipe(replace('%%GULP_INJECT_VERSION%%', version))
     // copy html files
     .pipe(gulp.dest('spec/fixtures'));
@@ -155,5 +154,5 @@ gulp.task('watch', function() {
 
 gulp.task('default', [
   'watch',
-  'views', 'javascript', 'sass', 'images'
+  'views', 'javascript', 'sass', 'images', 'test'
 ]);

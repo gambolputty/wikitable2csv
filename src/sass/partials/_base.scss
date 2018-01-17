@@ -7,13 +7,18 @@
 
 .table2csv-output {
 	&--active {
-		.table2csv-output__clear-btn { display: inline; }
-		.table2csv-output__no-output { display:none;  }
+		.table2csv-output__controls { display: block; }
+		.table2csv-output__no-output { display: none;  }
+	}
+
+	&__controls {
+		display: none;
+		margin-bottom: 2rem;
 	}
 
 	&__clear-btn {
-		display:none;
 		font-size: $font-size-base;
+		margin-right: 1rem;
 	}
 	&__no-output {
 		font-style: italic;
@@ -22,7 +27,7 @@
 	&__result {}
 	&__copy-msg {
 		display: none;
-		color:$green;
+		color: $green;
 		padding-left: 1rem;
 	}
 	&__csv {
