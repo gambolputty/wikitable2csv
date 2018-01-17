@@ -111,7 +111,13 @@ gulp.task('sass', function() {
       .on('error', errorHandler))
     .pipe(uncss({
         html: [paths.src + '/index.html'],
-        ignore: [/\.table2csv/, /\.btn\-.+/, /h\d/, /\.[mp][trbl]\-\d/, /\.alert.*/]
+        ignore: [
+          /\.table2csv/,
+          /\.btn\-.+/,
+          /h\d/,
+          /\.[mp][trbl]\-\d/,
+          /\.alert.*/
+        ]
     }))
     .pipe(gulp.dest(paths.dist));
 });
