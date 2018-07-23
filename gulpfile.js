@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var del = require('del');
 var sass = require('gulp-sass')
 var jshint = require('gulp-jshint');
 var notify = require("gulp-notify");
@@ -129,22 +128,6 @@ gulp.task('sass', function() {
     .pipe(gulp.dest(paths.dist));
 });
 
-// Clean Images
-gulp.task('clean:images', [], function() {
-  return del([
-    paths.dist + '/img/**/*.{jpg,png,svg,gif,webp,ico}'
-  ], { force: true });
-});
-
-gulp.task('images', [], function() {
-  gulp.src(paths.src + '/img/**/*.{jpg,png,svg,gif,webp,ico}', {
-      base: paths.src
-    })
-    .pipe(gulp.dest(paths.dist))
-    .pipe(livereload());
-});
-
-
 /**
  *  Watch
  */
@@ -161,11 +144,11 @@ gulp.task('watch', function() {
   ], ['javascript']);
 
   gulp.watch(paths.src + '/sass/**/*.scss', ['sass']);
-  gulp.watch(paths.src + '/img/**/*', ['images']);
 
 });
 
 gulp.task('default', [
   'watch',
-  'views', 'javascript', 'sass', 'images', 'test'
+  'views', 'javascript', 'sass',
+  //'test'
 ]);
