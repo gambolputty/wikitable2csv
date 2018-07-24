@@ -5,12 +5,12 @@ var notify = require("gulp-notify");
 var plumber = require('gulp-plumber');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
-var livereload = require('gulp-livereload');
 var uncss = require('gulp-uncss');
 var inject = require('gulp-inject');
 var replace = require('gulp-replace');
 var jasmineBrowser = require('gulp-jasmine-browser');
 var fs = require('fs');
+var connect = require('gulp-connect');
 var version = JSON.parse(fs.readFileSync('./package.json')).version;
 var debug = true;
 
@@ -76,7 +76,7 @@ gulp.task('views', function () {
 
   return stream
     .pipe(gulp.dest(paths.dist))
-    .pipe(livereload());
+    .pipe(connect.reload());
 })
 
 gulp.task('scripts', function  () {
@@ -103,7 +103,7 @@ gulp.task('scripts', function  () {
   return stream
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(gulp.dest(paths.dist))
-    .pipe(livereload());
+    .pipe(connect.reload());
 })
 
 gulp.task('styles', function () {
@@ -124,15 +124,11 @@ gulp.task('styles', function () {
         ]
       })
     )
-    .pipe(gulp.dest(paths.dist));
+    .pipe(gulp.dest(paths.dist))
+    .pipe(connect.reload());
 })
 
-/**
- *  Watch
- */
 gulp.task('watch', function () {
-
-  livereload.listen();
 
   gulp.watch([
     paths.src + "/*.html",
@@ -146,4 +142,13 @@ gulp.task('watch', function () {
 
 })
 
-gulp.task('default', gulp.series(gulp.parallel('views', 'scripts', 'styles'), 'watch'))
+gulp.task('connect', function() {
+    connect.server({
+      root: 'dist',
+      livereload: true
+    });
+});
+
+var compileAssets = gulp.parallel('views', 'scripts', 'styles');
+var serve = gulp.parallel('connect', 'watch');
+gulp.task('default', gulp.series(compileAssets, serve));
