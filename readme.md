@@ -10,6 +10,8 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Use i
 
 ## Install
 
+    # On Ubuntu:
+    # sudo npm install -g phantomjs-prebuilt
     git clone https://github.com/gambolputty/wikitable2csv
     cd wikitable2csv
     npm install
