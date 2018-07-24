@@ -16,6 +16,14 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Use i
     cd wikitable2csv
     npm install
 
+## Run
+
+You have to start
+
+    gulp
+
+in the `wikitable2csv` folder on the console. Then you  can see the app in http://localhost:8888/
+
 ## Changelog
 ### 2.1.0
 - parsing row- and col-span-attributes, thanks to [@bschreck](https://github.com/bschreck)
