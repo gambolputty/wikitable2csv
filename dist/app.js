@@ -1,1 +1,1332 @@
-!function(t){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).Clipboard=t()}}(function(){return function t(e,n,r){function o(a,l){if(!n[a]){if(!e[a]){var c="function"==typeof require&&require;if(!l&&c)return c(a,!0);if(i)return i(a,!0);var s=new Error("Cannot find module '"+a+"'");throw s.code="MODULE_NOT_FOUND",s}var u=n[a]={exports:{}};e[a][0].call(u.exports,function(t){var n=e[a][1][t];return o(n||t)},u,u.exports,t,e,n,r)}return n[a].exports}for(var i="function"==typeof require&&require,a=0;a<r.length;a++)o(r[a]);return o}({1:[function(t,e,n){var r=9;if("undefined"!=typeof Element&&!Element.prototype.matches){var o=Element.prototype;o.matches=o.matchesSelector||o.mozMatchesSelector||o.msMatchesSelector||o.oMatchesSelector||o.webkitMatchesSelector}e.exports=function(t,e){for(;t&&t.nodeType!==r;){if("function"==typeof t.matches&&t.matches(e))return t;t=t.parentNode}}},{}],2:[function(t,e,n){var r=t("./closest");e.exports=function(t,e,n,o,i){var a=function(t,e,n,o){return function(n){n.delegateTarget=r(n.target,e),n.delegateTarget&&o.call(t,n)}}.apply(this,arguments);return t.addEventListener(n,a,i),{destroy:function(){t.removeEventListener(n,a,i)}}}},{"./closest":1}],3:[function(t,e,n){n.node=function(t){return void 0!==t&&t instanceof HTMLElement&&1===t.nodeType},n.nodeList=function(t){var e=Object.prototype.toString.call(t);return void 0!==t&&("[object NodeList]"===e||"[object HTMLCollection]"===e)&&"length"in t&&(0===t.length||n.node(t[0]))},n.string=function(t){return"string"==typeof t||t instanceof String},n.fn=function(t){return"[object Function]"===Object.prototype.toString.call(t)}},{}],4:[function(t,e,n){var r=t("./is"),o=t("delegate");e.exports=function(t,e,n){if(!t&&!e&&!n)throw new Error("Missing required arguments");if(!r.string(e))throw new TypeError("Second argument must be a String");if(!r.fn(n))throw new TypeError("Third argument must be a Function");if(r.node(t))return d=e,p=n,(f=t).addEventListener(d,p),{destroy:function(){f.removeEventListener(d,p)}};if(r.nodeList(t))return c=t,s=e,u=n,Array.prototype.forEach.call(c,function(t){t.addEventListener(s,u)}),{destroy:function(){Array.prototype.forEach.call(c,function(t){t.removeEventListener(s,u)})}};if(r.string(t))return i=t,a=e,l=n,o(document.body,i,a,l);throw new TypeError("First argument must be a String, HTMLElement, HTMLCollection, or NodeList");var i,a,l,c,s,u,f,d,p}},{"./is":3,delegate:2}],5:[function(t,e,n){e.exports=function(t){var e;if("SELECT"===t.nodeName)t.focus(),e=t.value;else if("INPUT"===t.nodeName||"TEXTAREA"===t.nodeName){var n=t.hasAttribute("readonly");n||t.setAttribute("readonly",""),t.select(),t.setSelectionRange(0,t.value.length),n||t.removeAttribute("readonly"),e=t.value}else{t.hasAttribute("contenteditable")&&t.focus();var r=window.getSelection(),o=document.createRange();o.selectNodeContents(t),r.removeAllRanges(),r.addRange(o),e=r.toString()}return e}},{}],6:[function(t,e,n){function r(){}r.prototype={on:function(t,e,n){var r=this.e||(this.e={});return(r[t]||(r[t]=[])).push({fn:e,ctx:n}),this},once:function(t,e,n){var r=this;function o(){r.off(t,o),e.apply(n,arguments)}return o._=e,this.on(t,o,n)},emit:function(t){for(var e=[].slice.call(arguments,1),n=((this.e||(this.e={}))[t]||[]).slice(),r=0,o=n.length;r<o;r++)n[r].fn.apply(n[r].ctx,e);return this},off:function(t,e){var n=this.e||(this.e={}),r=n[t],o=[];if(r&&e)for(var i=0,a=r.length;i<a;i++)r[i].fn!==e&&r[i].fn._!==e&&o.push(r[i]);return o.length?n[t]=o:delete n[t],this}},e.exports=r},{}],7:[function(t,e,n){!function(r,o){if(void 0!==n)o(e,t("select"));else{var i={exports:{}};o(i,r.select),r.clipboardAction=i.exports}}(this,function(t,e){"use strict";var n,r=(n=e)&&n.__esModule?n:{default:n};var o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};var i=function(){function t(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}return function(e,n,r){return n&&t(e.prototype,n),r&&t(e,r),e}}(),a=function(){function t(e){!function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,t),this.resolveOptions(e),this.initSelection()}return i(t,[{key:"resolveOptions",value:function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};this.action=t.action,this.container=t.container,this.emitter=t.emitter,this.target=t.target,this.text=t.text,this.trigger=t.trigger,this.selectedText=""}},{key:"initSelection",value:function(){this.text?this.selectFake():this.target&&this.selectTarget()}},{key:"selectFake",value:function(){var t=this,e="rtl"==document.documentElement.getAttribute("dir");this.removeFake(),this.fakeHandlerCallback=function(){return t.removeFake()},this.fakeHandler=this.container.addEventListener("click",this.fakeHandlerCallback)||!0,this.fakeElem=document.createElement("textarea"),this.fakeElem.style.fontSize="12pt",this.fakeElem.style.border="0",this.fakeElem.style.padding="0",this.fakeElem.style.margin="0",this.fakeElem.style.position="absolute",this.fakeElem.style[e?"right":"left"]="-9999px";var n=window.pageYOffset||document.documentElement.scrollTop;this.fakeElem.style.top=n+"px",this.fakeElem.setAttribute("readonly",""),this.fakeElem.value=this.text,this.container.appendChild(this.fakeElem),this.selectedText=(0,r.default)(this.fakeElem),this.copyText()}},{key:"removeFake",value:function(){this.fakeHandler&&(this.container.removeEventListener("click",this.fakeHandlerCallback),this.fakeHandler=null,this.fakeHandlerCallback=null),this.fakeElem&&(this.container.removeChild(this.fakeElem),this.fakeElem=null)}},{key:"selectTarget",value:function(){this.selectedText=(0,r.default)(this.target),this.copyText()}},{key:"copyText",value:function(){var t=void 0;try{t=document.execCommand(this.action)}catch(e){t=!1}this.handleResult(t)}},{key:"handleResult",value:function(t){this.emitter.emit(t?"success":"error",{action:this.action,text:this.selectedText,trigger:this.trigger,clearSelection:this.clearSelection.bind(this)})}},{key:"clearSelection",value:function(){this.trigger&&this.trigger.focus(),window.getSelection().removeAllRanges()}},{key:"destroy",value:function(){this.removeFake()}},{key:"action",set:function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"copy";if(this._action=t,"copy"!==this._action&&"cut"!==this._action)throw new Error('Invalid "action" value, use either "copy" or "cut"')},get:function(){return this._action}},{key:"target",set:function(t){if(void 0!==t){if(!t||"object"!==(void 0===t?"undefined":o(t))||1!==t.nodeType)throw new Error('Invalid "target" value, use a valid Element');if("copy"===this.action&&t.hasAttribute("disabled"))throw new Error('Invalid "target" attribute. Please use "readonly" instead of "disabled" attribute');if("cut"===this.action&&(t.hasAttribute("readonly")||t.hasAttribute("disabled")))throw new Error('Invalid "target" attribute. You can\'t cut text from elements with "readonly" or "disabled" attributes');this._target=t}},get:function(){return this._target}}]),t}();t.exports=a})},{select:5}],8:[function(t,e,n){!function(r,o){if(void 0!==n)o(e,t("./clipboard-action"),t("tiny-emitter"),t("good-listener"));else{var i={exports:{}};o(i,r.clipboardAction,r.tinyEmitter,r.goodListener),r.clipboard=i.exports}}(this,function(t,e,n,r){"use strict";var o=l(e),i=l(n),a=l(r);function l(t){return t&&t.__esModule?t:{default:t}}var c="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};var s=function(){function t(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}return function(e,n,r){return n&&t(e.prototype,n),r&&t(e,r),e}}();var u=function(t){function e(t,n){!function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,e);var r=function(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}(this,(e.__proto__||Object.getPrototypeOf(e)).call(this));return r.resolveOptions(n),r.listenClick(t),r}return function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}(e,i.default),s(e,[{key:"resolveOptions",value:function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};this.action="function"==typeof t.action?t.action:this.defaultAction,this.target="function"==typeof t.target?t.target:this.defaultTarget,this.text="function"==typeof t.text?t.text:this.defaultText,this.container="object"===c(t.container)?t.container:document.body}},{key:"listenClick",value:function(t){var e=this;this.listener=(0,a.default)(t,"click",function(t){return e.onClick(t)})}},{key:"onClick",value:function(t){var e=t.delegateTarget||t.currentTarget;this.clipboardAction&&(this.clipboardAction=null),this.clipboardAction=new o.default({action:this.action(e),target:this.target(e),text:this.text(e),container:this.container,trigger:e,emitter:this})}},{key:"defaultAction",value:function(t){return f("action",t)}},{key:"defaultTarget",value:function(t){var e=f("target",t);if(e)return document.querySelector(e)}},{key:"defaultText",value:function(t){return f("text",t)}},{key:"destroy",value:function(){this.listener.destroy(),this.clipboardAction&&(this.clipboardAction.destroy(),this.clipboardAction=null)}}],[{key:"isSupported",value:function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:["copy","cut"],e="string"==typeof t?[t]:t,n=!!document.queryCommandSupported;return e.forEach(function(t){n=n&&!!document.queryCommandSupported(t)}),n}}]),e}();function f(t,e){var n="data-clipboard-"+t;if(e.hasAttribute(n))return e.getAttribute(n)}t.exports=u})},{"./clipboard-action":7,"good-listener":4,"tiny-emitter":6}]},{},[8])(8)});var app=function(t){function e(){t.helper.removeClass(".table2csv-output","table2csv-output--active"),document.querySelector(".table2csv-output__controls").innerHTML="",document.querySelector(".table2csv-output__result").innerHTML=""}function n(t,e){for(var n=t.querySelectorAll("*"),r=0;r<n.length;r++){var o=n[r];"none"!=o.style.display&&"none"!=getComputedStyle(o,"display")||o.parentNode.removeChild(o)}var i=t.textContent;!0===e.trim&&(i=i.trim()),!0===e.remove_n&&(i=i.replace(/\r?\n|\r/g," ")),/\"/.test(i)&&(i=i.replace(/\"/g,'""')),/\r|\n|\"|,/.test(i)&&(i='"'+i+'"');var a=t.getAttribute("rowSpan");a||(a=1);var l=t.getAttribute("colSpan");return l||(l=1),[i,a,l]}function r(e){var n=e.trigger.nextElementSibling;t.helper.fadeIn(n,"inline-block"),setTimeout(function(){t.helper.fadeOut(n)},300)}function o(){for(var t="",e=document.querySelectorAll(".table2csv-output__csv"),n=e.length,r=n-1,o=0;o<n;o++)t+=e[o].value,o!==r&&(t+="\n");return t}function i(t){return e(),!1}return t.submitClickCb=function(a){a.preventDefault();var l=null,c=null,s=t.form.querySelector(".table2csv-form__url-input").value.trim().match(/^https?\:\/{2}(\w+\.\w+\.org)\/(wiki\/|w\/index\.php)(.+)$/);if(null!=s)if(c=s[1],/^wiki\/$/.test(s[2]))null!=(u=s[3].match(/^([^&\#]+)/))&&(l=u[1]);else if(/^w\/index\.php$/.test(s[2])){var u;null!=(u=s[3].match(/title\=([^&\#]+)/))&&(l=u[1])}if(null!=s&&null!=l&&null!=c){var f,d,p,h="https://"+c+"/w/api.php?action=parse&format=json&origin=*&page="+l+"&prop=text",y={trim:document.querySelector(".table2csv-form__trim").checked,remove_n:document.querySelector(".table2csv-form__remove-n").checked,tableSelector:t.form.querySelector(".table2csv-form__table-selector").value};return e(),console.debug("Title: "+l),console.debug("URL: "+h),console.debug("Options",y),f=h,d=y,(p=new XMLHttpRequest).open("GET",f,!0),p.onreadystatechange=function(){if(4===this.readyState)if(this.status>=200&&this.status<400){var e=JSON.parse(this.responseText).parse.text["*"].replace(/<img[^>]*>/g,""),a=t.helper.parseHTML(e).querySelectorAll(d.tableSelector);if(a.length<=0)return void alert("Error: could not find any tables on page "+f);for(var l=a.length,c=0;c<l;c++){console.debug("Parsing table "+c);for(var s="",u=a[c].querySelectorAll("tr"),p=u.length,h={},y=0;y<p;y++){var v=[],m=u[y].querySelectorAll("th, td"),b=m.length,g=0;if(m){for(var k=0;k<b;k++){var S=n(m[k],d),_=S[0],E=S[1],w=S[2];for(j=0;j<w;j++){for(;h.hasOwnProperty(g.toString());){var x=h[g.toString()][1];v.push(x),h[g.toString()][0]-=1,0==h[g.toString()][0]&&delete h[g.toString()],g+=1}v.push(_),E>1&&(h[g.toString()]=[E-1,_]),g+=1}}s+=v.join()+"\n"}}var T=c+1,A='<div class="mb-5"><h5>Table '+T+'</h5><textarea id="copytarget-'+T+'" class="table2csv-output__csv form-control" rows="7">'+s+'</textarea><div class="mt-2"><button class="table2csv-output__copy-btn btn btn-outline-primary" data-clipboard-target="#copytarget-'+T+'">Copy to clipboard</button><span class="table2csv-output__copy-msg">Copied!</span></div></div>';t.helper.addClass(".table2csv-output","table2csv-output--active"),document.querySelector(".table2csv-output__result").insertAdjacentHTML("beforeend",A)}document.querySelector(".table2csv-output__controls").insertAdjacentHTML("beforeend",'<button class="table2csv-output__clear-btn btn btn-outline-primary">Clear Output</button>'),document.querySelector(".table2csv-output__clear-btn").addEventListener("click",i),new Clipboard(".table2csv-output__copy-btn").on("success",r),l>1&&(document.querySelector(".table2csv-output__controls").insertAdjacentHTML("beforeend",'<button class="table2csv-output__copy-all-btn btn btn-outline-primary">Copy all tables to clipboard</button><span class="table2csv-output__copy-msg">Copied!</span>'),new Clipboard(".table2csv-output__copy-all-btn",{text:o}).on("success",r))}else console.error("Error!"),alert("Something went wrong :(")},p.send(),p=null,!1}alert("Error parsing Wikipedia url. Please enter a valid Wikipedia url (e. g. https://en.wikipedia.org/wiki/List_of_airports)")},t}((app=function(t){var e={parseHTML:function(t){if("function"==typeof document.createRange)return document.createRange().createContextualFragment(t);var e=document.createElement("div");return e.innerHTML=t,e.children[0]},addClass:function(t,e){if(t){"string"==typeof t?t=document.querySelectorAll(t):t.tagName&&(t=[t]);for(var n=0;n<t.length;n++)(" "+t[n].className+" ").indexOf(" "+e+" ")<0&&(t[n].className+=" "+e)}},removeClass:function(t,e){if(t){"string"==typeof t?t=document.querySelectorAll(t):t.tagName&&(t=[t]);for(var n=new RegExp("(^| )"+e+"($| )","g"),r=0;r<t.length;r++)t[r].className=t[r].className.replace(n," ")}},fadeOut:function(t){t.style.opacity=1,function e(){(t.style.opacity-=.1)<0?t.style.display="none":requestAnimationFrame(e)}()},fadeIn:function(t,e){t.style.opacity=0,t.style.display=e||"block",function e(){var n=parseFloat(t.style.opacity);(n+=.1)>1||(t.style.opacity=n,requestAnimationFrame(e))}()}};return t.helper=e,t}(app||{}))||{}),debug=!1;debug||(console.debug=function(){});app=function(t){return t.init=function(){t.form=document.getElementsByClassName("table2csv-form")[0],document.querySelector(".table2csv-form__btn-submit").addEventListener("click",t.submitClickCb)},t}(app||{});
+/*!
+ * clipboard.js v2.0.1
+ * https://zenorocha.github.io/clipboard.js
+ * 
+ * Licensed MIT © Zeno Rocha
+ */
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["ClipboardJS"] = factory();
+	else
+		root["ClipboardJS"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if (typeof exports !== "undefined") {
+        factory(module, require('select'));
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod, global.select);
+        global.clipboardAction = mod.exports;
+    }
+})(this, function (module, _select) {
+    'use strict';
+
+    var _select2 = _interopRequireDefault(_select);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+        return typeof obj;
+    } : function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var ClipboardAction = function () {
+        /**
+         * @param {Object} options
+         */
+        function ClipboardAction(options) {
+            _classCallCheck(this, ClipboardAction);
+
+            this.resolveOptions(options);
+            this.initSelection();
+        }
+
+        /**
+         * Defines base properties passed from constructor.
+         * @param {Object} options
+         */
+
+
+        _createClass(ClipboardAction, [{
+            key: 'resolveOptions',
+            value: function resolveOptions() {
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+                this.action = options.action;
+                this.container = options.container;
+                this.emitter = options.emitter;
+                this.target = options.target;
+                this.text = options.text;
+                this.trigger = options.trigger;
+
+                this.selectedText = '';
+            }
+        }, {
+            key: 'initSelection',
+            value: function initSelection() {
+                if (this.text) {
+                    this.selectFake();
+                } else if (this.target) {
+                    this.selectTarget();
+                }
+            }
+        }, {
+            key: 'selectFake',
+            value: function selectFake() {
+                var _this = this;
+
+                var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
+
+                this.removeFake();
+
+                this.fakeHandlerCallback = function () {
+                    return _this.removeFake();
+                };
+                this.fakeHandler = this.container.addEventListener('click', this.fakeHandlerCallback) || true;
+
+                this.fakeElem = document.createElement('textarea');
+                // Prevent zooming on iOS
+                this.fakeElem.style.fontSize = '12pt';
+                // Reset box model
+                this.fakeElem.style.border = '0';
+                this.fakeElem.style.padding = '0';
+                this.fakeElem.style.margin = '0';
+                // Move element out of screen horizontally
+                this.fakeElem.style.position = 'absolute';
+                this.fakeElem.style[isRTL ? 'right' : 'left'] = '-9999px';
+                // Move element to the same position vertically
+                var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+                this.fakeElem.style.top = yPosition + 'px';
+
+                this.fakeElem.setAttribute('readonly', '');
+                this.fakeElem.value = this.text;
+
+                this.container.appendChild(this.fakeElem);
+
+                this.selectedText = (0, _select2.default)(this.fakeElem);
+                this.copyText();
+            }
+        }, {
+            key: 'removeFake',
+            value: function removeFake() {
+                if (this.fakeHandler) {
+                    this.container.removeEventListener('click', this.fakeHandlerCallback);
+                    this.fakeHandler = null;
+                    this.fakeHandlerCallback = null;
+                }
+
+                if (this.fakeElem) {
+                    this.container.removeChild(this.fakeElem);
+                    this.fakeElem = null;
+                }
+            }
+        }, {
+            key: 'selectTarget',
+            value: function selectTarget() {
+                this.selectedText = (0, _select2.default)(this.target);
+                this.copyText();
+            }
+        }, {
+            key: 'copyText',
+            value: function copyText() {
+                var succeeded = void 0;
+
+                try {
+                    succeeded = document.execCommand(this.action);
+                } catch (err) {
+                    succeeded = false;
+                }
+
+                this.handleResult(succeeded);
+            }
+        }, {
+            key: 'handleResult',
+            value: function handleResult(succeeded) {
+                this.emitter.emit(succeeded ? 'success' : 'error', {
+                    action: this.action,
+                    text: this.selectedText,
+                    trigger: this.trigger,
+                    clearSelection: this.clearSelection.bind(this)
+                });
+            }
+        }, {
+            key: 'clearSelection',
+            value: function clearSelection() {
+                if (this.trigger) {
+                    this.trigger.focus();
+                }
+
+                window.getSelection().removeAllRanges();
+            }
+        }, {
+            key: 'destroy',
+            value: function destroy() {
+                this.removeFake();
+            }
+        }, {
+            key: 'action',
+            set: function set() {
+                var action = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'copy';
+
+                this._action = action;
+
+                if (this._action !== 'copy' && this._action !== 'cut') {
+                    throw new Error('Invalid "action" value, use either "copy" or "cut"');
+                }
+            },
+            get: function get() {
+                return this._action;
+            }
+        }, {
+            key: 'target',
+            set: function set(target) {
+                if (target !== undefined) {
+                    if (target && (typeof target === 'undefined' ? 'undefined' : _typeof(target)) === 'object' && target.nodeType === 1) {
+                        if (this.action === 'copy' && target.hasAttribute('disabled')) {
+                            throw new Error('Invalid "target" attribute. Please use "readonly" instead of "disabled" attribute');
+                        }
+
+                        if (this.action === 'cut' && (target.hasAttribute('readonly') || target.hasAttribute('disabled'))) {
+                            throw new Error('Invalid "target" attribute. You can\'t cut text from elements with "readonly" or "disabled" attributes');
+                        }
+
+                        this._target = target;
+                    } else {
+                        throw new Error('Invalid "target" value, use a valid Element');
+                    }
+                }
+            },
+            get: function get() {
+                return this._target;
+            }
+        }]);
+
+        return ClipboardAction;
+    }();
+
+    module.exports = ClipboardAction;
+});
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var is = __webpack_require__(6);
+var delegate = __webpack_require__(5);
+
+/**
+ * Validates all params and calls the right
+ * listener function based on its target type.
+ *
+ * @param {String|HTMLElement|HTMLCollection|NodeList} target
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Object}
+ */
+function listen(target, type, callback) {
+    if (!target && !type && !callback) {
+        throw new Error('Missing required arguments');
+    }
+
+    if (!is.string(type)) {
+        throw new TypeError('Second argument must be a String');
+    }
+
+    if (!is.fn(callback)) {
+        throw new TypeError('Third argument must be a Function');
+    }
+
+    if (is.node(target)) {
+        return listenNode(target, type, callback);
+    }
+    else if (is.nodeList(target)) {
+        return listenNodeList(target, type, callback);
+    }
+    else if (is.string(target)) {
+        return listenSelector(target, type, callback);
+    }
+    else {
+        throw new TypeError('First argument must be a String, HTMLElement, HTMLCollection, or NodeList');
+    }
+}
+
+/**
+ * Adds an event listener to a HTML element
+ * and returns a remove listener function.
+ *
+ * @param {HTMLElement} node
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Object}
+ */
+function listenNode(node, type, callback) {
+    node.addEventListener(type, callback);
+
+    return {
+        destroy: function() {
+            node.removeEventListener(type, callback);
+        }
+    }
+}
+
+/**
+ * Add an event listener to a list of HTML elements
+ * and returns a remove listener function.
+ *
+ * @param {NodeList|HTMLCollection} nodeList
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Object}
+ */
+function listenNodeList(nodeList, type, callback) {
+    Array.prototype.forEach.call(nodeList, function(node) {
+        node.addEventListener(type, callback);
+    });
+
+    return {
+        destroy: function() {
+            Array.prototype.forEach.call(nodeList, function(node) {
+                node.removeEventListener(type, callback);
+            });
+        }
+    }
+}
+
+/**
+ * Add an event listener to a selector
+ * and returns a remove listener function.
+ *
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Object}
+ */
+function listenSelector(selector, type, callback) {
+    return delegate(document.body, selector, type, callback);
+}
+
+module.exports = listen;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+function E () {
+  // Keep this empty so it's easier to inherit from
+  // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
+}
+
+E.prototype = {
+  on: function (name, callback, ctx) {
+    var e = this.e || (this.e = {});
+
+    (e[name] || (e[name] = [])).push({
+      fn: callback,
+      ctx: ctx
+    });
+
+    return this;
+  },
+
+  once: function (name, callback, ctx) {
+    var self = this;
+    function listener () {
+      self.off(name, listener);
+      callback.apply(ctx, arguments);
+    };
+
+    listener._ = callback
+    return this.on(name, listener, ctx);
+  },
+
+  emit: function (name) {
+    var data = [].slice.call(arguments, 1);
+    var evtArr = ((this.e || (this.e = {}))[name] || []).slice();
+    var i = 0;
+    var len = evtArr.length;
+
+    for (i; i < len; i++) {
+      evtArr[i].fn.apply(evtArr[i].ctx, data);
+    }
+
+    return this;
+  },
+
+  off: function (name, callback) {
+    var e = this.e || (this.e = {});
+    var evts = e[name];
+    var liveEvents = [];
+
+    if (evts && callback) {
+      for (var i = 0, len = evts.length; i < len; i++) {
+        if (evts[i].fn !== callback && evts[i].fn._ !== callback)
+          liveEvents.push(evts[i]);
+      }
+    }
+
+    // Remove event from queue to prevent memory leak
+    // Suggested by https://github.com/lazd
+    // Ref: https://github.com/scottcorgan/tiny-emitter/commit/c6ebfaa9bc973b33d110a84a307742b7cf94c953#commitcomment-5024910
+
+    (liveEvents.length)
+      ? e[name] = liveEvents
+      : delete e[name];
+
+    return this;
+  }
+};
+
+module.exports = E;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, __webpack_require__(0), __webpack_require__(2), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if (typeof exports !== "undefined") {
+        factory(module, require('./clipboard-action'), require('tiny-emitter'), require('good-listener'));
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod, global.clipboardAction, global.tinyEmitter, global.goodListener);
+        global.clipboard = mod.exports;
+    }
+})(this, function (module, _clipboardAction, _tinyEmitter, _goodListener) {
+    'use strict';
+
+    var _clipboardAction2 = _interopRequireDefault(_clipboardAction);
+
+    var _tinyEmitter2 = _interopRequireDefault(_tinyEmitter);
+
+    var _goodListener2 = _interopRequireDefault(_goodListener);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+        return typeof obj;
+    } : function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    function _possibleConstructorReturn(self, call) {
+        if (!self) {
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }
+
+        return call && (typeof call === "object" || typeof call === "function") ? call : self;
+    }
+
+    function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+            throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+        }
+
+        subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+                value: subClass,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            }
+        });
+        if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+    }
+
+    var Clipboard = function (_Emitter) {
+        _inherits(Clipboard, _Emitter);
+
+        /**
+         * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
+         * @param {Object} options
+         */
+        function Clipboard(trigger, options) {
+            _classCallCheck(this, Clipboard);
+
+            var _this = _possibleConstructorReturn(this, (Clipboard.__proto__ || Object.getPrototypeOf(Clipboard)).call(this));
+
+            _this.resolveOptions(options);
+            _this.listenClick(trigger);
+            return _this;
+        }
+
+        /**
+         * Defines if attributes would be resolved using internal setter functions
+         * or custom functions that were passed in the constructor.
+         * @param {Object} options
+         */
+
+
+        _createClass(Clipboard, [{
+            key: 'resolveOptions',
+            value: function resolveOptions() {
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+                this.action = typeof options.action === 'function' ? options.action : this.defaultAction;
+                this.target = typeof options.target === 'function' ? options.target : this.defaultTarget;
+                this.text = typeof options.text === 'function' ? options.text : this.defaultText;
+                this.container = _typeof(options.container) === 'object' ? options.container : document.body;
+            }
+        }, {
+            key: 'listenClick',
+            value: function listenClick(trigger) {
+                var _this2 = this;
+
+                this.listener = (0, _goodListener2.default)(trigger, 'click', function (e) {
+                    return _this2.onClick(e);
+                });
+            }
+        }, {
+            key: 'onClick',
+            value: function onClick(e) {
+                var trigger = e.delegateTarget || e.currentTarget;
+
+                if (this.clipboardAction) {
+                    this.clipboardAction = null;
+                }
+
+                this.clipboardAction = new _clipboardAction2.default({
+                    action: this.action(trigger),
+                    target: this.target(trigger),
+                    text: this.text(trigger),
+                    container: this.container,
+                    trigger: trigger,
+                    emitter: this
+                });
+            }
+        }, {
+            key: 'defaultAction',
+            value: function defaultAction(trigger) {
+                return getAttributeValue('action', trigger);
+            }
+        }, {
+            key: 'defaultTarget',
+            value: function defaultTarget(trigger) {
+                var selector = getAttributeValue('target', trigger);
+
+                if (selector) {
+                    return document.querySelector(selector);
+                }
+            }
+        }, {
+            key: 'defaultText',
+            value: function defaultText(trigger) {
+                return getAttributeValue('text', trigger);
+            }
+        }, {
+            key: 'destroy',
+            value: function destroy() {
+                this.listener.destroy();
+
+                if (this.clipboardAction) {
+                    this.clipboardAction.destroy();
+                    this.clipboardAction = null;
+                }
+            }
+        }], [{
+            key: 'isSupported',
+            value: function isSupported() {
+                var action = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ['copy', 'cut'];
+
+                var actions = typeof action === 'string' ? [action] : action;
+                var support = !!document.queryCommandSupported;
+
+                actions.forEach(function (action) {
+                    support = support && !!document.queryCommandSupported(action);
+                });
+
+                return support;
+            }
+        }]);
+
+        return Clipboard;
+    }(_tinyEmitter2.default);
+
+    /**
+     * Helper function to retrieve attribute value.
+     * @param {String} suffix
+     * @param {Element} element
+     */
+    function getAttributeValue(suffix, element) {
+        var attribute = 'data-clipboard-' + suffix;
+
+        if (!element.hasAttribute(attribute)) {
+            return;
+        }
+
+        return element.getAttribute(attribute);
+    }
+
+    module.exports = Clipboard;
+});
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+var DOCUMENT_NODE_TYPE = 9;
+
+/**
+ * A polyfill for Element.matches()
+ */
+if (typeof Element !== 'undefined' && !Element.prototype.matches) {
+    var proto = Element.prototype;
+
+    proto.matches = proto.matchesSelector ||
+                    proto.mozMatchesSelector ||
+                    proto.msMatchesSelector ||
+                    proto.oMatchesSelector ||
+                    proto.webkitMatchesSelector;
+}
+
+/**
+ * Finds the closest parent that matches a selector.
+ *
+ * @param {Element} element
+ * @param {String} selector
+ * @return {Function}
+ */
+function closest (element, selector) {
+    while (element && element.nodeType !== DOCUMENT_NODE_TYPE) {
+        if (typeof element.matches === 'function' &&
+            element.matches(selector)) {
+          return element;
+        }
+        element = element.parentNode;
+    }
+}
+
+module.exports = closest;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var closest = __webpack_require__(4);
+
+/**
+ * Delegates event to a selector.
+ *
+ * @param {Element} element
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} callback
+ * @param {Boolean} useCapture
+ * @return {Object}
+ */
+function _delegate(element, selector, type, callback, useCapture) {
+    var listenerFn = listener.apply(this, arguments);
+
+    element.addEventListener(type, listenerFn, useCapture);
+
+    return {
+        destroy: function() {
+            element.removeEventListener(type, listenerFn, useCapture);
+        }
+    }
+}
+
+/**
+ * Delegates event to a selector.
+ *
+ * @param {Element|String|Array} [elements]
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} callback
+ * @param {Boolean} useCapture
+ * @return {Object}
+ */
+function delegate(elements, selector, type, callback, useCapture) {
+    // Handle the regular Element usage
+    if (typeof elements.addEventListener === 'function') {
+        return _delegate.apply(null, arguments);
+    }
+
+    // Handle Element-less usage, it defaults to global delegation
+    if (typeof type === 'function') {
+        // Use `document` as the first parameter, then apply arguments
+        // This is a short way to .unshift `arguments` without running into deoptimizations
+        return _delegate.bind(null, document).apply(null, arguments);
+    }
+
+    // Handle Selector-based usage
+    if (typeof elements === 'string') {
+        elements = document.querySelectorAll(elements);
+    }
+
+    // Handle Array-like based usage
+    return Array.prototype.map.call(elements, function (element) {
+        return _delegate(element, selector, type, callback, useCapture);
+    });
+}
+
+/**
+ * Finds closest match and invokes callback.
+ *
+ * @param {Element} element
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Function}
+ */
+function listener(element, selector, type, callback) {
+    return function(e) {
+        e.delegateTarget = closest(e.target, selector);
+
+        if (e.delegateTarget) {
+            callback.call(element, e);
+        }
+    }
+}
+
+module.exports = delegate;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+/**
+ * Check if argument is a HTML element.
+ *
+ * @param {Object} value
+ * @return {Boolean}
+ */
+exports.node = function(value) {
+    return value !== undefined
+        && value instanceof HTMLElement
+        && value.nodeType === 1;
+};
+
+/**
+ * Check if argument is a list of HTML elements.
+ *
+ * @param {Object} value
+ * @return {Boolean}
+ */
+exports.nodeList = function(value) {
+    var type = Object.prototype.toString.call(value);
+
+    return value !== undefined
+        && (type === '[object NodeList]' || type === '[object HTMLCollection]')
+        && ('length' in value)
+        && (value.length === 0 || exports.node(value[0]));
+};
+
+/**
+ * Check if argument is a string.
+ *
+ * @param {Object} value
+ * @return {Boolean}
+ */
+exports.string = function(value) {
+    return typeof value === 'string'
+        || value instanceof String;
+};
+
+/**
+ * Check if argument is a function.
+ *
+ * @param {Object} value
+ * @return {Boolean}
+ */
+exports.fn = function(value) {
+    var type = Object.prototype.toString.call(value);
+
+    return type === '[object Function]';
+};
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+function select(element) {
+    var selectedText;
+
+    if (element.nodeName === 'SELECT') {
+        element.focus();
+
+        selectedText = element.value;
+    }
+    else if (element.nodeName === 'INPUT' || element.nodeName === 'TEXTAREA') {
+        var isReadOnly = element.hasAttribute('readonly');
+
+        if (!isReadOnly) {
+            element.setAttribute('readonly', '');
+        }
+
+        element.select();
+        element.setSelectionRange(0, element.value.length);
+
+        if (!isReadOnly) {
+            element.removeAttribute('readonly');
+        }
+
+        selectedText = element.value;
+    }
+    else {
+        if (element.hasAttribute('contenteditable')) {
+            element.focus();
+        }
+
+        var selection = window.getSelection();
+        var range = document.createRange();
+
+        range.selectNodeContents(element);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        selectedText = selection.toString();
+    }
+
+    return selectedText;
+}
+
+module.exports = select;
+
+
+/***/ })
+/******/ ]);
+});
+var app = ( function( parent ) {
+
+  var helper = {};
+
+  helper.parseHTML = function( str ) {
+    if ( typeof document[ 'createRange' ] === 'function' ) {
+      return document.createRange().createContextualFragment( str );
+    } else {
+      var el = document.createElement( 'div' );
+      el.innerHTML = str;
+      return el.children[ 0 ];
+    }
+  };
+
+  /*
+    add/remove class
+    credits: https://www.sitepoint.com/add-remove-css-class-vanilla-js/
+   */
+  helper.addClass = function( elements, myClass ) {
+
+    // if there are no elements, we're done
+    if ( !elements ) {
+      return;
+    }
+
+    // if we have a selector, get the chosen elements
+    if ( typeof( elements ) === 'string' ) {
+      elements = document.querySelectorAll( elements );
+    }
+
+    // if we have a single DOM element, make it an array to simplify behavior
+    else if ( elements.tagName ) {
+      elements = [ elements ];
+    }
+
+    // add class to all chosen elements
+    for ( var i = 0; i < elements.length; i++ ) {
+
+      // if class is not already found
+      if ( ( ' ' + elements[ i ].className + ' ' ).indexOf( ' ' + myClass + ' ' ) < 0 ) {
+
+        // add class
+        elements[ i ].className += ' ' + myClass;
+      }
+    }
+  }
+  helper.removeClass = function( elements, myClass ) {
+
+    // if there are no elements, we're done
+    if ( !elements ) {
+      return;
+    }
+
+    // if we have a selector, get the chosen elements
+    if ( typeof( elements ) === 'string' ) {
+      elements = document.querySelectorAll( elements );
+    }
+
+    // if we have a single DOM element, make it an array to simplify behavior
+    else if ( elements.tagName ) {
+      elements = [ elements ];
+    }
+
+    // create pattern to find class name
+    var reg = new RegExp( '(^| )' + myClass + '($| )', 'g' );
+
+    // remove class from all chosen elements
+    for ( var i = 0; i < elements.length; i++ ) {
+      elements[ i ].className = elements[ i ].className.replace( reg, ' ' );
+    }
+  }
+
+  /*
+    fade in/out
+    credits: http://www.chrisbuttery.com/articles/fade-in-fade-out-with-javascript/
+   */
+  // fade out
+  helper.fadeOut = function( el ) {
+    el.style.opacity = 1;
+
+    ( function fade() {
+      if ( ( el.style.opacity -= .1 ) < 0 ) {
+        el.style.display = "none";
+      } else {
+        requestAnimationFrame( fade );
+      }
+    } )();
+  }
+  // fade in
+  helper.fadeIn = function( el, display ) {
+    el.style.opacity = 0;
+    el.style.display = display || "block";
+
+    ( function fade() {
+      var val = parseFloat( el.style.opacity );
+      if ( !( ( val += .1 ) > 1 ) ) {
+        el.style.opacity = val;
+        requestAnimationFrame( fade );
+      }
+    } )();
+  }
+
+  parent.helper = helper;
+  return parent;
+
+} )( app || {} );
+var app = ( function( parent ) {
+
+  /*
+    private methods
+   */
+
+  function clearOutput() {
+    parent.helper.removeClass( '.table2csv-output', 'table2csv-output--active' );
+    document.querySelector( '.table2csv-output__controls' ).innerHTML = '';
+    document.querySelector( '.table2csv-output__result' ).innerHTML = '';
+  }
+
+  function parseCell( cellItem, options ) {
+
+    // first: remove invisible elements in cells
+    var every_el = cellItem.querySelectorAll( '*' );
+    for ( var i = 0; i < every_el.length; i++ ) {
+      var el = every_el[ i ];
+      if ( el.style.display == 'none' || getComputedStyle( el, 'display' ) == 'none' ) {
+        el.parentNode.removeChild( el );
+      }
+    }
+
+    var line = cellItem.textContent;
+    if ( options.trim === true ) {
+      line = line.trim();
+    }
+    if ( options.remove_n === true ) {
+      line = line.replace( /\r?\n|\r/g, ' ' );
+    }
+
+    // escape double quotes in line
+    if ( /\"/.test( line ) ) {
+      line = line.replace( /\"/g, '""' );
+    }
+
+    // put line in double quotes
+    // if line break, comma or quote found in line
+    if ( /\r|\n|\"|,/.test( line ) ) {
+      line = '"' + line + '"';
+    }
+
+    // check for rowSpan attr
+    var rowSpan = parseInt(cellItem.getAttribute('rowSpan'));
+    if (!rowSpan)
+      rowSpan = 1;
+
+    // check for colSpan attr
+    var colSpan = parseInt(cellItem.getAttribute('colSpan'));
+    if (!colSpan)
+      colSpan = 1;
+
+    return [line, rowSpan, colSpan];
+  }
+
+  function copyMsgAnimation( e ) {
+    // fade in/out copy msg
+    var copyMsg = e.trigger.nextElementSibling;
+    parent.helper.fadeIn( copyMsg, 'inline-block' );
+    setTimeout( function() {
+      parent.helper.fadeOut( copyMsg );
+    }, 300 );
+    // e.clearSelection();
+  }
+
+  function concatAllTables() {
+    // concat tables from textareas
+    var text = '';
+    var textareas = document.querySelectorAll( '.table2csv-output__csv' );
+    var textareasLen = textareas.length;
+    var lastIdx = textareasLen - 1;
+    for ( var i = 0; i < textareasLen; i++ ) {
+      text += textareas[ i ].value;
+      if ( i !== lastIdx )
+        text += '\n';
+    }
+    return text;
+  }
+
+  function clearBtnCb( e ) {
+    // clear output
+    clearOutput();
+    return false;
+  }
+
+  function sendRequest( queryUrl, options ) {
+    var request = new XMLHttpRequest();
+    request.open( 'GET', queryUrl, true );
+
+    request.onreadystatechange = function() {
+      if ( this.readyState === 4 ) {
+        if ( this.status >= 200 && this.status < 400 ) {
+          // Success!
+          var data = JSON.parse( this.responseText );
+          // console.debug( 'Request completed', data);
+          // remove images to prevent 404 errors in console
+          var markup = data.parse.text[ '*' ].replace( /<img[^>]*>/g, '' );
+          // parse HTML
+          var dom = parent.helper.parseHTML( markup );
+          // find tables
+          var tables = dom.querySelectorAll( options.tableSelector );
+          if ( tables.length <= 0 ) {
+            alert( 'Error: could not find any tables on page ' + queryUrl );
+            return;
+          }
+
+          // loop tables
+          var tablesLen = tables.length;
+          for ( var i = 0; i < tablesLen; i++ ) {
+
+            console.debug( 'Parsing table ' + i );
+
+            var tableEl = tables[ i ];
+            var csv = '';
+            var rows = tableEl.querySelectorAll( 'tr' );
+            var rowsLen = rows.length;
+            var allRowSpans = {};
+            // loop rows
+            for ( var x = 0; x < rowsLen; x++ ) {
+              var row = rows[ x ];
+              var csvLine = [];
+              var cells = row.querySelectorAll( 'th, td' );
+              var cellsLen = cells.length;
+              var rowSpanIdx = 0;
+/*
+              if ( !cells )
+                continue;*/
+
+              // loop cells
+              for ( var cellIdx = 0; cellIdx < cellsLen; cellIdx++ ) {
+                var parsedCell = parseCell( cells[ cellIdx ], options );
+                var cellText = parsedCell[ 0 ];
+                var rowSpan = parsedCell[ 1 ];
+                var colSpan = parsedCell[ 2 ];
+                
+                // loop colSpan & rowSpan
+                // credits: @bschreck
+                // based on pull request: https://github.com/gambolputty/wikitable2csv/pull/6
+                for ( var j = 0; j < colSpan; j++ ) {
+                  console.debug(allRowSpans, rowSpanIdx, cellText, Object.keys(allRowSpans))
+                  while ( allRowSpans.hasOwnProperty( rowSpanIdx.toString() ) ) {
+                    console.debug('while', allRowSpans, rowSpanIdx, cellText, Object.keys(allRowSpans))
+                    // var num_left = allRowSpans[ rowSpanIdx.toString() ][ 0 ];
+                    var val = allRowSpans[ rowSpanIdx.toString() ][ 1 ];
+                    csvLine.push( val );
+
+                    allRowSpans[ rowSpanIdx.toString() ][ 0 ] -= 1;
+                    if ( allRowSpans[ rowSpanIdx.toString() ][ 0 ] == 0 ) {
+                      delete allRowSpans[ rowSpanIdx.toString() ];
+                    }
+                    rowSpanIdx += 1;
+                  }
+                  csvLine.push( cellText );
+                  if ( rowSpan > 1 ) {
+                    allRowSpans[ rowSpanIdx.toString() ] = [ rowSpan - 1, cellText ];
+                  }
+                  rowSpanIdx += 1;
+                }
+              }
+              csv += csvLine.join() + '\n';
+              
+            }
+
+            var blockId = i + 1;
+            var csvContainer = '<div class="mb-5">' +
+              '<h5>Table ' + blockId + '</h5>' +
+              '<textarea id="copytarget-' + blockId + '" class="table2csv-output__csv form-control" rows="7">' + csv + '</textarea>' +
+              '<div class="mt-2">' +
+              '<button class="table2csv-output__copy-btn btn btn-outline-primary" data-clipboard-target="#copytarget-' + blockId + '">Copy to clipboard</button>' +
+              '<span class="table2csv-output__copy-msg">Copied!</span>' +
+              '</div>' +
+              '</div>';
+            parent.helper.addClass( '.table2csv-output', 'table2csv-output--active' );
+            document.querySelector( '.table2csv-output__result' ).insertAdjacentHTML( 'beforeend', csvContainer );
+            
+            // loop tables END
+          }
+
+          // insert clear output button
+          var clearBtn = '<button class="table2csv-output__clear-btn btn btn-outline-primary">Clear Output</button>';
+          document.querySelector( '.table2csv-output__controls' ).insertAdjacentHTML( 'beforeend', clearBtn );
+          document.querySelector( '.table2csv-output__clear-btn' ).addEventListener('click', clearBtnCb);
+
+          // init clipboard functions
+          var clipboard = new ClipboardJS( '.table2csv-output__copy-btn' );
+          clipboard.on( 'success', copyMsgAnimation );
+
+          // insert copy all button
+          if ( tablesLen > 1 ) {
+            var copyAllBtn = '<button class="table2csv-output__copy-all-btn btn btn-outline-primary">Copy all tables to clipboard</button>' + 
+                             '<span class="table2csv-output__copy-msg">Copied!</span>';
+            document.querySelector( '.table2csv-output__controls' ).insertAdjacentHTML( 'beforeend', copyAllBtn );
+            // init clipboard fn
+            var clipboardAll = new ClipboardJS( '.table2csv-output__copy-all-btn', {
+              text: concatAllTables
+            } );
+            clipboardAll.on( 'success', copyMsgAnimation );
+          }
+
+        } else {
+          console.error( 'Error!' );
+          alert( 'Something went wrong :(' );
+        }
+      }
+    };
+
+    request.send();
+    request = null;
+
+  }
+
+  /*
+    public methods
+   */
+
+  parent.submitClickCb = function( e ) {
+    e.preventDefault();
+    var urlVal = parent.form.querySelector( '.table2csv-form__url-input' ).value.trim();
+    var title = null;
+    var domain = null;
+
+    // Parse Url
+    var urlMatch = urlVal.match( /^https?\:\/{2}(\w+\.\w+\.org)\/(wiki\/|w\/index\.php)(.+)$/ );
+    if ( urlMatch != null ) {
+
+      domain = urlMatch[ 1 ];
+
+      // get title
+      if ( /^wiki\/$/.test( urlMatch[ 2 ] ) ) {
+        // 1. https://en.wikipedia.org/wiki/Lists_of_earthquakes
+        var matchTitle = urlMatch[ 3 ].match( /^([^&\#]+)/ )
+        if ( matchTitle != null ) {
+          title = matchTitle[ 1 ];
+        }
+      } else if ( /^w\/index\.php$/.test( urlMatch[ 2 ] ) ) {
+        // 2. https://fr.wikipedia.org/w/index.php?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
+        var matchTitle = urlMatch[ 3 ].match( /title\=([^&\#]+)/ )
+        if ( matchTitle != null ) {
+          title = matchTitle[ 1 ];
+        }
+      }
+    }
+
+    if ( urlMatch == null || title == null || domain == null ) {
+      alert( 'Error parsing Wikipedia url. Please enter a valid Wikipedia url (e. g. https://en.wikipedia.org/wiki/List_of_airports)' );
+      return;
+    }
+
+    var queryUrl = 'https://' + domain + '/w/api.php?action=parse&format=json&origin=*&page=' + title + '&prop=text';
+    var options = {
+      trim: document.querySelector( '.table2csv-form__trim' ).checked,
+      remove_n: document.querySelector( '.table2csv-form__remove-n' ).checked,
+      tableSelector: parent.form.querySelector( '.table2csv-form__table-selector' ).value,
+    };
+
+
+    // clear output
+    clearOutput();
+
+    console.debug( 'Title: ' + title );
+    console.debug( 'URL: ' + queryUrl );
+    console.debug( 'Options', options );
+
+    // send request
+    sendRequest( queryUrl, options );
+
+    return false;
+  }
+
+  return parent;
+
+} )( app || {} );
+var debug = true;
+if (!debug) {
+  console.debug = function() {};
+}
+
+var app = ( function( parent ) {
+
+  parent.init = function() {
+    parent.form = document.getElementsByClassName('table2csv-form')[0];
+    document.querySelector( '.table2csv-form__btn-submit' ).addEventListener('click', parent.submitClickCb);
+  }
+
+  return parent;
+
+} )( app || {} );

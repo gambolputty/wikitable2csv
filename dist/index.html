@@ -5,8 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Wiki Table to CSV online converter</title>
   <meta name="description" content="A web tool to convert Wikipedia Tables to CSV. For Excel or similar spreadsheet applications. Howto: enter the URL of the Wikipedia page containing the table(s). Press 'Convert' and copy the result to your clipboard.">
-    <link rel='stylesheet' href='style.css?ver=2.1.0' type='text/css' media='all' />
-  <script type='text/javascript' src='app.js?ver=2.1.0'></script>
+  <link rel='stylesheet' href='style.css?ver=2.2.0' type='text/css' media='all' />
+  <script type='text/javascript' src='app.js?ver=2.2.0'></script>
+  <script type="text/javascript">
+    function ready(fn) {
+      if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading")
+        fn();
+      else
+        document.addEventListener('DOMContentLoaded', fn);
+    }
+    ready(function() {
+      app.init();
+    });
+  </script>
   <!-- Piwik -->
   <script type="text/javascript">
     var _paq = _paq || [];
@@ -22,17 +33,6 @@
   </script>
   <noscript><p><img src="https://piwik.ggor.de/piwik.php?idsite=3&rec=1" style="border:0;" alt="" /></p></noscript>
   <!-- End Piwik Code -->
-  <script type="text/javascript">
-    function ready(fn) {
-      if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading")
-        fn();
-      else
-        document.addEventListener('DOMContentLoaded', fn);
-    }
-    ready(function() {
-      app.init();
-    });
-  </script>
 </head>
 <body>
   <div class="table2csv container">
@@ -54,7 +54,7 @@
           <div class="form-group row">
             <label for="table2csv-url" class="col-12 col-sm-3 col-form-label">Page URL:</label>
             <div class="col-12 col-sm-9">
-              <input type="text" id="table2csv-url" class="table2csv-form__url-input form-control" name="url" aria-describedby="url-input-help">
+              <input type="text" id="table2csv-url" class="table2csv-form__url-input form-control" name="url" aria-describedby="url-input-help" value="https://en.wikipedia.org/wiki/2002_FIFA_World_Cup">
               <small id="url-input-help" class=" form-text text-muted">e.g. https://en.wikipedia.org/wiki/Lists_of_earthquakes</small>
             </div>
           </div>
@@ -62,19 +62,13 @@
             <div class="row">
               <legend class="col-12 col-sm-3 col-form-legend">Options</legend>
               <div class="col-12 col-sm-9">
-                <div class="form-check">
-                  <label class="custom-control custom-checkbox form-check-label">
-                    <input type="checkbox" class="table2csv-form__trim custom-control-input form-check-input" checked value="1">
-                    <span class="custom-control-indicator"></span>
-                    <span class="custom-control-description">Trim cells</span>
-                  </label>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="table2csv-form__trim custom-control-input" id="table2csv-check-trim" checked value="1">
+                  <label class="custom-control-label" for="table2csv-check-trim">Trim cells</label>
                 </div>
-                <div class="form-check">
-	                <label class="custom-control custom-checkbox form-check-label">
-	                  <input type="checkbox" class="table2csv-form__remove-n custom-control-input form-check-input" checked value="1">
-	                  <span class="custom-control-indicator"></span>
-	                  <span class="custom-control-description">Remove line breaks in cells</span>
-	                </label>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="table2csv-form__remove-n custom-control-input" id="table2csv-check-remove-n" checked value="1">
+	                <label class="custom-control-label" for="table2csv-check-remove-n">Remove line breaks in cells</label>
                 </div>
               </div>
             </div>
@@ -82,7 +76,7 @@
           <div class="form-group row">
           	<label for="table-selector" class="col-12 col-sm-3 col-form-label">CSS table selector</label>
             <div class="col-12 col-sm-9">
-              <input type="text" id="table-selector" class="table2csv-form__table-selector form-control" name="table-selector" value="table.wikitable" aria-describedby="table-selector-help">
+              <input type="text" id="table-selector" class="table2csv-form__table-selector form-control" name="table-selector" value="table.wikitable:nth-of-type(5)" aria-describedby="table-selector-help">
               <small id="table-selector-help" class="form-text text-muted">Default is "table.wikitable"</small>
             </div>
           </div>

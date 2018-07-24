@@ -41,12 +41,12 @@ var app = ( function( parent ) {
     }
 
     // check for rowSpan attr
-    var rowSpan = cellItem.getAttribute('rowSpan');
+    var rowSpan = parseInt(cellItem.getAttribute('rowSpan'));
     if (!rowSpan)
       rowSpan = 1;
 
     // check for colSpan attr
-    var colSpan = cellItem.getAttribute('colSpan');
+    var colSpan = parseInt(cellItem.getAttribute('colSpan'));
     if (!colSpan)
       colSpan = 1;
 
@@ -110,48 +110,49 @@ var app = ( function( parent ) {
 
             console.debug( 'Parsing table ' + i );
 
-            // loop rows
             var tableEl = tables[ i ];
             var csv = '';
             var rows = tableEl.querySelectorAll( 'tr' );
             var rowsLen = rows.length;
-            var rowSpans = {};
+            var allRowSpans = {};
+            // loop rows
             for ( var x = 0; x < rowsLen; x++ ) {
               var row = rows[ x ];
-
-              // loop cells
               var csvLine = [];
               var cells = row.querySelectorAll( 'th, td' );
               var cellsLen = cells.length;
               var rowSpanIdx = 0;
-
+/*
               if ( !cells )
-                continue;
+                continue;*/
 
-              for ( var y = 0; y < cellsLen; y++ ) {
-                var parsedCell = parseCell( cells[ y ], options );
+              // loop cells
+              for ( var cellIdx = 0; cellIdx < cellsLen; cellIdx++ ) {
+                var parsedCell = parseCell( cells[ cellIdx ], options );
                 var cellText = parsedCell[ 0 ];
-                var new_row_span = parsedCell[ 1 ];
-                var col_span = parsedCell[ 2 ];
+                var rowSpan = parsedCell[ 1 ];
+                var colSpan = parsedCell[ 2 ];
                 
-                // loop colSpan
+                // loop colSpan & rowSpan
                 // credits: @bschreck
                 // based on pull request: https://github.com/gambolputty/wikitable2csv/pull/6
-                for ( j = 0; j < col_span; j++ ) {
-                  while ( rowSpans.hasOwnProperty( rowSpanIdx.toString() ) ) {
-                    // var num_left = rowSpans[ rowSpanIdx.toString() ][ 0 ];
-                    var val = rowSpans[ rowSpanIdx.toString() ][ 1 ];
+                for ( var j = 0; j < colSpan; j++ ) {
+                  console.debug(allRowSpans, rowSpanIdx, cellText, Object.keys(allRowSpans))
+                  while ( allRowSpans.hasOwnProperty( rowSpanIdx.toString() ) ) {
+                    console.debug('while', allRowSpans, rowSpanIdx, cellText, Object.keys(allRowSpans))
+                    // var num_left = allRowSpans[ rowSpanIdx.toString() ][ 0 ];
+                    var val = allRowSpans[ rowSpanIdx.toString() ][ 1 ];
                     csvLine.push( val );
 
-                    rowSpans[ rowSpanIdx.toString() ][ 0 ] -= 1;
-                    if ( rowSpans[ rowSpanIdx.toString() ][ 0 ] == 0 ) {
-                      delete rowSpans[ rowSpanIdx.toString() ];
+                    allRowSpans[ rowSpanIdx.toString() ][ 0 ] -= 1;
+                    if ( allRowSpans[ rowSpanIdx.toString() ][ 0 ] == 0 ) {
+                      delete allRowSpans[ rowSpanIdx.toString() ];
                     }
                     rowSpanIdx += 1;
                   }
                   csvLine.push( cellText );
-                  if ( new_row_span > 1 ) {
-                    rowSpans[ rowSpanIdx.toString() ] = [ new_row_span - 1, cellText ];
+                  if ( rowSpan > 1 ) {
+                    allRowSpans[ rowSpanIdx.toString() ] = [ rowSpan - 1, cellText ];
                   }
                   rowSpanIdx += 1;
                 }
@@ -181,7 +182,7 @@ var app = ( function( parent ) {
           document.querySelector( '.table2csv-output__clear-btn' ).addEventListener('click', clearBtnCb);
 
           // init clipboard functions
-          var clipboard = new Clipboard( '.table2csv-output__copy-btn' );
+          var clipboard = new ClipboardJS( '.table2csv-output__copy-btn' );
           clipboard.on( 'success', copyMsgAnimation );
 
           // insert copy all button
@@ -190,7 +191,7 @@ var app = ( function( parent ) {
                              '<span class="table2csv-output__copy-msg">Copied!</span>';
             document.querySelector( '.table2csv-output__controls' ).insertAdjacentHTML( 'beforeend', copyAllBtn );
             // init clipboard fn
-            var clipboardAll = new Clipboard( '.table2csv-output__copy-all-btn', {
+            var clipboardAll = new ClipboardJS( '.table2csv-output__copy-all-btn', {
               text: concatAllTables
             } );
             clipboardAll.on( 'success', copyMsgAnimation );

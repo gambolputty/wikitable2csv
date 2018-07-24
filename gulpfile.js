@@ -10,11 +10,9 @@ var uncss = require('gulp-uncss');
 var inject = require('gulp-inject');
 var replace = require('gulp-replace');
 var jasmineBrowser = require('gulp-jasmine-browser');
-var watch = require('gulp-watch');
-
 var fs = require('fs');
 var version = JSON.parse(fs.readFileSync('./package.json')).version;
-var debug = false;
+var debug = true;
 
 var paths = {
   src: 'src',
@@ -31,8 +29,8 @@ function errorHandler(error) {
   this.emit('end');
 }
 
-gulp.task('testFixtures', function() {
-  gulp.src(paths.src + '/index.html')
+gulp.task('testFixtures', function () {
+  return gulp.src(paths.src + '/index.html')
     // Inject head html
     .pipe(inject(gulp.src(paths.src + '/head.html'), {
       starttag: '<!-- inject:head:{{ext}} -->',
@@ -48,9 +46,9 @@ gulp.task('testFixtures', function() {
     .pipe(gulp.dest('spec/fixtures'));
   gulp.src([paths.dist + '/app.js', paths.dist + '/style.css',])
     .pipe(gulp.dest('spec/fixtures'));
-});   
+})
 
-gulp.task('test', ['testFixtures'], function() {
+gulp.task('test', function () {
   var filesForTest = [
     paths.npm + '/jquery/dist/jquery.js',
     paths.npm + '/jasmine-jquery/lib/jasmine-jquery.js',
@@ -61,27 +59,27 @@ gulp.task('test', ['testFixtures'], function() {
     .pipe(watch(filesForTest, { base: '.' }))
     .pipe(jasmineBrowser.specRunner())
     .pipe(jasmineBrowser.server({port: 8888}));
-});
+})
 
-gulp.task('views', [], function() {
-  gulp.src(paths.src + '/index.html')
-    // Inject head html
-    .pipe(inject(gulp.src(paths.src + '/head.html'), {
-      starttag: '<!-- inject:head:{{ext}} -->',
-      removeTags: true,
-      transform: function (filePath, file) {
-        // return file contents as string
-        return file.contents.toString('utf8')
-      }
-    }))
+gulp.task('views', function () {
+  var stream = gulp.src(paths.src + '/index.html')
     .pipe(replace('%%GULP_INJECT_PATH%%', ''))
-    .pipe(replace('%%GULP_INJECT_VERSION%%', version))
-    // copy html files
+    .pipe(replace('%%GULP_INJECT_VERSION%%', version));
+
+  if (debug == false) {
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_SELECTOR%%', 'table.wikitable'))
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_URL%%', ''))
+  } else {
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_SELECTOR%%', 'table.wikitable:nth-of-type(5)'))    
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_URL%%', 'https://en.wikipedia.org/wiki/2002_FIFA_World_Cup'))
+  }
+
+  return stream
     .pipe(gulp.dest(paths.dist))
     .pipe(livereload());
-});
+})
 
-gulp.task('javascript', [], function() {
+gulp.task('scripts', function  () {
   var stream = gulp.src([
 
       // Vendor
@@ -102,20 +100,20 @@ gulp.task('javascript', [], function() {
     stream.pipe(uglify());
   }
 
-  stream
+  return stream
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(gulp.dest(paths.dist))
     .pipe(livereload());
-});
+})
 
-gulp.task('sass', function() {
-  gulp.src(paths.src + '/sass/style.scss')
-    .pipe(sass({
-        outputStyle: 'compressed',
-        includePaths: [paths.src + '/sass']
-      })
-      .on('error', errorHandler))
-    .pipe(uncss({
+gulp.task('styles', function () {
+  return gulp.src(paths.src + '/sass/style.scss')
+    .pipe(
+      sass({outputStyle: 'compressed'})
+      .on('error', errorHandler)
+    )
+    .pipe(
+      uncss({
         html: [paths.src + '/index.html'],
         ignore: [
           /\.table2csv/,
@@ -124,31 +122,28 @@ gulp.task('sass', function() {
           /\.[mp][trbl]\-\d/,
           /\.alert.*/
         ]
-    }))
+      })
+    )
     .pipe(gulp.dest(paths.dist));
-});
+})
 
 /**
  *  Watch
  */
-gulp.task('watch', function() {
+gulp.task('watch', function () {
 
   livereload.listen();
 
   gulp.watch([
     paths.src + "/*.html",
-  ], ['views', 'sass']);
+  ], gulp.series('views'));
 
   gulp.watch([
     paths.src + '/js/*.js',
-  ], ['javascript']);
+  ], gulp.series('scripts'));
 
-  gulp.watch(paths.src + '/sass/**/*.scss', ['sass']);
+  gulp.watch(paths.src + '/sass/**/*.scss', gulp.series('styles'));
 
-});
+})
 
-gulp.task('default', [
-  'watch',
-  'views', 'javascript', 'sass',
-  //'test'
-]);
+gulp.task('default', gulp.series(gulp.parallel('views', 'scripts', 'styles'), 'watch'))
