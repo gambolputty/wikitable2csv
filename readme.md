@@ -24,6 +24,16 @@ You have to start
 
 in the `wikitable2csv` folder on the console. Then you  can see the app in http://localhost:8888/
 
+## Upgrade
+
+To upgrade to the latest GitHub commit just run these lines:
+
+    git pull
+    # if there are generated files like `/spec/fixtures/app.js` stash them away with
+    # git stash
+    npm install
+    gulp
+
 ## Changelog
 ### 2.1.0
 - parsing row- and col-span-attributes, thanks to [@bschreck](https://github.com/bschreck)
