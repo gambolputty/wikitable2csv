@@ -12,7 +12,7 @@ var jasmineBrowser = require('gulp-jasmine-browser');
 var fs = require('fs');
 var connect = require('gulp-connect');
 var version = JSON.parse(fs.readFileSync('./package.json')).version;
-var debug = true;
+var debug = false;
 
 var paths = {
   src: 'src',
@@ -70,8 +70,8 @@ gulp.task('views', function () {
     stream.pipe(replace('%%GULP_INJECT_DEFAULT_SELECTOR%%', 'table.wikitable'))
     stream.pipe(replace('%%GULP_INJECT_DEFAULT_URL%%', ''))
   } else {
-    stream.pipe(replace('%%GULP_INJECT_DEFAULT_SELECTOR%%', 'table.wikitable:nth-of-type(5)'))    
-    stream.pipe(replace('%%GULP_INJECT_DEFAULT_URL%%', 'https://en.wikipedia.org/wiki/2002_FIFA_World_Cup'))
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_SELECTOR%%', 'table.wikitable'))
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_URL%%', 'https://en.wikipedia.org/wiki/List_of_world_sports_championships'))
   }
 
   return stream

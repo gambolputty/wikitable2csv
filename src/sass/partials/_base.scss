@@ -20,17 +20,26 @@
 		font-size: $font-size-base;
 		margin-right: 1rem;
 	}
+
 	&__no-output {
 		font-style: italic;
 	}
+
 	&__block {}	
+
 	&__result {}
+
 	&__copy-msg {
 		display: none;
 		color: $green;
 		padding-left: 1rem;
 	}
+
 	&__csv {
 		font-family: $font-family-monospace;
+	}
+
+	&__download-btn {
+		margin-right: 1rem;
 	}
 }
