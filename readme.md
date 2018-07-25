@@ -12,7 +12,7 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Use i
 ### 2.2.2
 - Added download button
 - Gulp 4
-- Bugfix: colSpan & rowSpan messed up. See [#10](../issues/10)
+- Bugfix: colSpan & rowSpan messed up. See [#10](../../issues/10)
 - minor code changes
 ### 2.1.0
 - parsing row- and col-span-attributes, thanks to [@bschreck](https://github.com/bschreck)
