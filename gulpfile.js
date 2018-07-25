@@ -1,19 +1,16 @@
 var gulp = require('gulp');
-var del = require('del');
 var sass = require('gulp-sass')
 var jshint = require('gulp-jshint');
 var notify = require("gulp-notify");
 var plumber = require('gulp-plumber');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
-var livereload = require('gulp-livereload');
 var uncss = require('gulp-uncss');
 var inject = require('gulp-inject');
 var replace = require('gulp-replace');
 var jasmineBrowser = require('gulp-jasmine-browser');
-var watch = require('gulp-watch');
-
 var fs = require('fs');
+var connect = require('gulp-connect');
 var version = JSON.parse(fs.readFileSync('./package.json')).version;
 var debug = false;
 
@@ -32,8 +29,8 @@ function errorHandler(error) {
   this.emit('end');
 }
 
-gulp.task('testFixtures', function() {
-  gulp.src(paths.src + '/index.html')
+gulp.task('testFixtures', function () {
+  return gulp.src(paths.src + '/index.html')
     // Inject head html
     .pipe(inject(gulp.src(paths.src + '/head.html'), {
       starttag: '<!-- inject:head:{{ext}} -->',
@@ -49,9 +46,9 @@ gulp.task('testFixtures', function() {
     .pipe(gulp.dest('spec/fixtures'));
   gulp.src([paths.dist + '/app.js', paths.dist + '/style.css',])
     .pipe(gulp.dest('spec/fixtures'));
-});   
+})
 
-gulp.task('test', ['testFixtures'], function() {
+gulp.task('test', function () {
   var filesForTest = [
     paths.npm + '/jquery/dist/jquery.js',
     paths.npm + '/jasmine-jquery/lib/jasmine-jquery.js',
@@ -62,27 +59,27 @@ gulp.task('test', ['testFixtures'], function() {
     .pipe(watch(filesForTest, { base: '.' }))
     .pipe(jasmineBrowser.specRunner())
     .pipe(jasmineBrowser.server({port: 8888}));
-});
+})
 
-gulp.task('views', [], function() {
-  gulp.src(paths.src + '/index.html')
-    // Inject head html
-    .pipe(inject(gulp.src(paths.src + '/head.html'), {
-      starttag: '<!-- inject:head:{{ext}} -->',
-      removeTags: true,
-      transform: function (filePath, file) {
-        // return file contents as string
-        return file.contents.toString('utf8')
-      }
-    }))
+gulp.task('views', function () {
+  var stream = gulp.src(paths.src + '/index.html')
     .pipe(replace('%%GULP_INJECT_PATH%%', ''))
-    .pipe(replace('%%GULP_INJECT_VERSION%%', version))
-    // copy html files
-    .pipe(gulp.dest(paths.dist))
-    .pipe(livereload());
-});
+    .pipe(replace('%%GULP_INJECT_VERSION%%', version));
 
-gulp.task('javascript', [], function() {
+  if (debug == false) {
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_SELECTOR%%', 'table.wikitable'))
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_URL%%', ''))
+  } else {
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_SELECTOR%%', 'table.wikitable'))
+    stream.pipe(replace('%%GULP_INJECT_DEFAULT_URL%%', 'https://en.wikipedia.org/wiki/List_of_world_sports_championships'))
+  }
+
+  return stream
+    .pipe(gulp.dest(paths.dist))
+    .pipe(connect.reload());
+})
+
+gulp.task('scripts', function  () {
   var stream = gulp.src([
 
       // Vendor
@@ -103,20 +100,20 @@ gulp.task('javascript', [], function() {
     stream.pipe(uglify());
   }
 
-  stream
+  return stream
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(gulp.dest(paths.dist))
-    .pipe(livereload());
-});
+    .pipe(connect.reload());
+})
 
-gulp.task('sass', function() {
-  gulp.src(paths.src + '/sass/style.scss')
-    .pipe(sass({
-        outputStyle: 'compressed',
-        includePaths: [paths.src + '/sass']
-      })
-      .on('error', errorHandler))
-    .pipe(uncss({
+gulp.task('styles', function () {
+  return gulp.src(paths.src + '/sass/style.scss')
+    .pipe(
+      sass({outputStyle: 'compressed'})
+      .on('error', errorHandler)
+    )
+    .pipe(
+      uncss({
         html: [paths.src + '/index.html'],
         ignore: [
           /\.table2csv/,
@@ -125,47 +122,33 @@ gulp.task('sass', function() {
           /\.[mp][trbl]\-\d/,
           /\.alert.*/
         ]
-    }))
-    .pipe(gulp.dest(paths.dist));
-});
-
-// Clean Images
-gulp.task('clean:images', [], function() {
-  return del([
-    paths.dist + '/img/**/*.{jpg,png,svg,gif,webp,ico}'
-  ], { force: true });
-});
-
-gulp.task('images', [], function() {
-  gulp.src(paths.src + '/img/**/*.{jpg,png,svg,gif,webp,ico}', {
-      base: paths.src
-    })
+      })
+    )
     .pipe(gulp.dest(paths.dist))
-    .pipe(livereload());
-});
+    .pipe(connect.reload());
+})
 
-
-/**
- *  Watch
- */
-gulp.task('watch', function() {
-
-  livereload.listen();
+gulp.task('watch', function () {
 
   gulp.watch([
     paths.src + "/*.html",
-  ], ['views', 'sass']);
+  ], gulp.series('views'));
 
   gulp.watch([
     paths.src + '/js/*.js',
-  ], ['javascript']);
+  ], gulp.series('scripts'));
 
-  gulp.watch(paths.src + '/sass/**/*.scss', ['sass']);
-  gulp.watch(paths.src + '/img/**/*', ['images']);
+  gulp.watch(paths.src + '/sass/**/*.scss', gulp.series('styles'));
 
+})
+
+gulp.task('connect', function() {
+    connect.server({
+      root: 'dist',
+      livereload: true
+    });
 });
 
-gulp.task('default', [
-  'watch',
-  'views', 'javascript', 'sass', 'images', 'test'
-]);
+var compileAssets = gulp.parallel('views', 'scripts', 'styles');
+var serve = gulp.parallel('connect', 'watch');
+gulp.task('default', gulp.series(compileAssets, serve));

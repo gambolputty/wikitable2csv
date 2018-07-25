@@ -77,4 +77,9 @@ describe('Output', function () {
     }, 600);
   });
 
+  /*
+  Test rowspan:
+  https://en.wikipedia.org/wiki/List_of_world_sports_championships
+   */
+
 });

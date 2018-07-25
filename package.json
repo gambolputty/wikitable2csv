@@ -1,8 +1,8 @@
 {
   "name": "wikitable2csv",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "repository": "github:gambolputty/wikitable2csv",
-  "description": "",
+  "description": "A web tool to convert Wikipedia tables to CSV",
   "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,23 +11,22 @@
   "license": "MIT",
   "dependencies": {
     "bootstrap": "^4.0.0-beta",
-    "clipboard": "^1.5.16",
-    "del": "^2.2.0"
+    "clipboard": "^2.0.1"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-concat": "^2.6.1",
+    "gulp-connect": "^5.5.0",
     "gulp-inject": "^4.3.0",
-    "gulp-jasmine-browser": "^2.0.4",
+    "gulp-jasmine-browser": "^4.0.0",
     "gulp-jshint": "^2.0.0",
-    "gulp-livereload": "^3.8.1",
-    "gulp-notify": "^2.2.0",
+    "gulp-notify": "^3.2.0",
     "gulp-plumber": "^1.1.0",
-    "gulp-replace": "^0.6.1",
-    "gulp-sass": "^3.1.0",
+    "gulp-replace": "^1.0.0",
+    "gulp-sass": "^4.0.1",
     "gulp-uglify": "^3.0.0",
     "gulp-uncss": "^1.0.6",
-    "gulp-watch": "^5.0.0",
+    "jasmine-core": "^3.1.0",
     "jasmine-jquery": "^2.1.1",
     "jquery": "^3.2.1",
     "jshint": "^2.9.1",
