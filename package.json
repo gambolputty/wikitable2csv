@@ -1,6 +1,6 @@
 {
   "name": "wikitable2csv",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "repository": "github:gambolputty/wikitable2csv",
   "description": "A web tool to convert Wikipedia tables to CSV",
   "main": "gulpfile.js",

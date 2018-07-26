@@ -243,6 +243,10 @@ var app = (function (parent) {
     return result
   }
 
+  function returnInputError() {
+    alert('Error reading Wikipedia url. Please enter a valid Wikipedia url (e. g. https://en.wikipedia.org/wiki/List_of_airports)');
+  }
+
   /*
     public methods
    */
@@ -250,33 +254,31 @@ var app = (function (parent) {
   parent.submitClickCb = function (e) {
     e.preventDefault();
     var urlVal = parent.form.querySelector('.table2csv-form__url-input').value.trim();
+    if (!urlVal) {
+      returnInputError();
+      return;
+    }
     var title = null;
     var domain = null;
 
     // Parse Url
-    var urlMatch = urlVal.match(/^https?\:\/{2}(\w+\.\w+\.org)\/(wiki\/|w\/index\.php)(.+)$/);
-    if (urlMatch != null) {
-
-      domain = urlMatch[1];
-
-      // get title
-      if (/^wiki\/$/.test(urlMatch[2])) {
-        // 1. https://en.wikipedia.org/wiki/Lists_of_earthquakes
-        var matchTitle = urlMatch[3].match(/^([^&\#]+)/)
-        if (matchTitle != null) {
-          title = matchTitle[1];
-        }
-      } else if (/^w\/index\.php$/.test(urlMatch[2])) {
-        // 2. https://fr.wikipedia.org/w/index.php?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
-        var matchTitle = urlMatch[3].match(/title\=([^&\#]+)/)
-        if (matchTitle != null) {
-          title = matchTitle[1];
-        }
-      }
+    // Reference: https://www.mediawiki.org/wiki/Manual:Short_URL
+    var urlMatch = urlVal.match(/^https?\:\/{2}(\w+\.\w+\.org)\/(?:w\/index\.php\?title\=([^&\#]+)|[^\/]+\/([^&\#]+)).*$/);
+    console.debug(urlMatch);
+    // get domain
+    if (urlMatch[1]) {
+      domain = urlMatch[1];      
     }
 
-    if (urlMatch == null || title == null || domain == null) {
-      alert('Error parsing Wikipedia url. Please enter a valid Wikipedia url (e. g. https://en.wikipedia.org/wiki/List_of_airports)');
+    // get title
+    if (typeof urlMatch[2] !== 'undefined') {
+      title = urlMatch[2];
+    } else if (typeof urlMatch[3] !== 'undefined') {
+      title = urlMatch[3];
+    }
+
+    if (title === null || domain === null) {
+      returnInputError();
       return;
     }
 
