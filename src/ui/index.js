@@ -108,6 +108,11 @@ ui.submitClickCb = function (e) {
   // send request
   this.ui.query.call(this);
 
+  // get api url
+  helper.sendRequest(`${urlVal}?origin=*`, (responseText) => {
+    console.warn(responseText)
+  });
+
   return false;
 }
 
@@ -118,8 +123,10 @@ ui.query = function () {
 
     // remove images to prevent 404 errors in console
     var markup = data.parse.text['*'].replace(/<img[^>]*>/g, '');
+
     // parse HTML
     var dom = helper.parseHTML(markup);
+
     // find tables
     var tables = dom.querySelectorAll(this.options.tableSelector);
     if (tables.length <= 0) {

@@ -125,6 +125,7 @@ helper.sendRequest = function (queryUrl, cb) {
     }
   };
   request.open('GET', queryUrl, true);
+  request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
   request.send();
   request = null;
 }
