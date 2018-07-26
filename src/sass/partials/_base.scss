@@ -6,7 +6,10 @@
 
 
 .table2csv-output {
+	display: none;
+	border-top: 1px solid #ddd;
 	&--active {
+		display: block;
 		.table2csv-output__controls { display: block; }
 		.table2csv-output__no-output { display: none;  }
 	}

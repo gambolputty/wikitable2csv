@@ -2,7 +2,7 @@ var app = (function (parent) {
 
   var helper = {};
 
-  helper.ready = function(fn) {
+  helper.ready = function (fn) {
     if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading")
       fn();
     else
@@ -106,6 +106,33 @@ var app = (function (parent) {
       }
     })();
   }
+
+  // Ajax Request
+  helper.sendRequest = function (queryUrl, cb) {
+    var request = new XMLHttpRequest();
+    if (!request) {
+      alert('Cannot create an XMLHTTP instance :(');
+      return;
+    }
+    request.onreadystatechange = function () {
+      if (this.readyState === XMLHttpRequest.DONE) {
+        if (this.status === 200) {
+          if (typeof cb === 'function') {
+            cb(this.responseText);
+          }
+        } else {
+          console.error('Error!');
+          alert('Error sending request to "' + queryUrl + '" :(');
+        }
+      }
+    };
+    request.open('GET', queryUrl, true);
+    request.send();
+    request = null;
+  }
+
+  // Parse Url
+  // Credits: 
 
   parent.helper = helper;
   return parent;

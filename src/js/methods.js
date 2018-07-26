@@ -96,83 +96,71 @@ var app = (function (parent) {
   }
 
   function sendRequest(queryUrl, options) {
-    var request = new XMLHttpRequest();
-    request.open('GET', queryUrl, true);
+    parent.helper.sendRequest(queryUrl, function (responseText) {
+      var data = JSON.parse(responseText);
 
-    request.onreadystatechange = function () {
-      if (this.readyState === 4 && this.status === 200) {
-
-        // Success!
-        var data = JSON.parse(this.responseText);
-        // console.debug( 'Request completed', data);
-        // remove images to prevent 404 errors in console
-        var markup = data.parse.text['*'].replace(/<img[^>]*>/g, '');
-        // parse HTML
-        var dom = parent.helper.parseHTML(markup);
-        // find tables
-        var tables = dom.querySelectorAll(options.tableSelector);
-        if (tables.length <= 0) {
-          alert('Error: could not find any tables on page ' + queryUrl);
-          return;
-        }
-
-        // loop tables
-        var tablesLen = tables.length;
-        for (var i = 0; i < tablesLen; i++) {
-
-          console.debug('Parsing table ' + i);
-
-          var tableEl = tables[i];
-          var csv = parseTable(tableEl, options);
-
-          var blockId = i + 1;
-          var csvContainer = '<div class="mb-5">' +
-            '<h5>Table ' + blockId + '</h5>' +
-            '<textarea id="table-' + blockId + '" class="table2csv-output__csv form-control" rows="7">' + csv + '</textarea>' +
-            '<div class="mt-2">' +
-            '<button class="table2csv-output__download-btn btn btn-outline-primary" data-download-target="table-' + blockId + '">Download</button>' +
-            '<button class="table2csv-output__copy-btn btn btn-outline-primary" data-clipboard-target="#table-' + blockId + '">Copy to clipboard</button>' +
-            '<span class="table2csv-output__copy-msg">Copied!</span>' +
-            '</div>' +
-            '</div>';
-          parent.helper.addClass('.table2csv-output', 'table2csv-output--active');
-          document.querySelector('.table2csv-output__result').insertAdjacentHTML('beforeend', csvContainer);
-        }
-        
-        // download btn event handler
-        var dlBtns = document.getElementsByClassName('table2csv-output__download-btn');
-        for (var i = 0; i < dlBtns.length; i++) {
-          dlBtns[i].addEventListener('click', downloadBtnCb);
-        }
-
-        // insert clear output button
-        var clearBtn = '<button class="table2csv-output__clear-btn btn btn-outline-primary">Clear Output</button>';
-        document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', clearBtn);
-        document.querySelector('.table2csv-output__clear-btn').addEventListener('click', clearBtnCb);
-
-        // init clipboard functions
-        var clipboard = new ClipboardJS('.table2csv-output__copy-btn');
-        clipboard.on('success', copyMsgAnimation);
-
-        // insert copy all button
-        if (tablesLen > 1) {
-          var copyAllBtn = '<button class="table2csv-output__copy-all-btn btn btn-outline-primary">Copy all tables to clipboard</button>' +
-            '<span class="table2csv-output__copy-msg">Copied!</span>';
-          document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', copyAllBtn);
-          // init clipboard fn
-          var clipboardAll = new ClipboardJS('.table2csv-output__copy-all-btn', {
-            text: concatAllTables
-          });
-          clipboardAll.on('success', copyMsgAnimation);
-        }
+      // remove images to prevent 404 errors in console
+      var markup = data.parse.text['*'].replace(/<img[^>]*>/g, '');
+      // parse HTML
+      var dom = parent.helper.parseHTML(markup);
+      // find tables
+      var tables = dom.querySelectorAll(options.tableSelector);
+      if (tables.length <= 0) {
+        alert('Error: could not find any tables on page ' + queryUrl);
+        return;
       }
-      // console.error('Error!');
-      // alert('Something went wrong :(');
-      // return;
-    };
- 
-    request.send();
-    request = null;
+
+      // loop tables
+      var tablesLen = tables.length;
+      for (var i = 0; i < tablesLen; i++) {
+
+        console.debug('Parsing table ' + i);
+
+        var tableEl = tables[i];
+        var csv = parseTable(tableEl, options);
+
+        var blockId = i + 1;
+        var csvContainer = '<div class="mb-5">' +
+          '<h5>Table ' + blockId + '</h5>' +
+          '<textarea id="table-' + blockId + '" class="table2csv-output__csv form-control" rows="7">' + csv + '</textarea>' +
+          '<div class="mt-2">' +
+          '<button class="table2csv-output__download-btn btn btn-outline-primary" data-download-target="table-' + blockId + '">Download</button>' +
+          '<button class="table2csv-output__copy-btn btn btn-outline-primary" data-clipboard-target="#table-' + blockId + '">Copy to clipboard</button>' +
+          '<span class="table2csv-output__copy-msg">Copied!</span>' +
+          '</div>' +
+          '</div>';
+        parent.helper.addClass('.table2csv-output', 'table2csv-output--active');
+        document.querySelector('.table2csv-output__result').insertAdjacentHTML('beforeend', csvContainer);
+      }
+      
+      // download btn event handler
+      var dlBtns = document.getElementsByClassName('table2csv-output__download-btn');
+      for (var i = 0; i < dlBtns.length; i++) {
+        dlBtns[i].addEventListener('click', downloadBtnCb);
+      }
+
+      // insert clear output button
+      var clearBtn = '<button class="table2csv-output__clear-btn btn btn-outline-primary">Clear Output</button>';
+      document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', clearBtn);
+      document.querySelector('.table2csv-output__clear-btn').addEventListener('click', clearBtnCb);
+
+      // init clipboard functions
+      var clipboard = new ClipboardJS('.table2csv-output__copy-btn');
+      clipboard.on('success', copyMsgAnimation);
+
+      // insert copy all button
+      if (tablesLen > 1) {
+        var copyAllBtn = '<button class="table2csv-output__copy-all-btn btn btn-outline-primary">Copy all tables to clipboard</button>' +
+          '<span class="table2csv-output__copy-msg">Copied!</span>';
+        document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', copyAllBtn);
+        // init clipboard fn
+        var clipboardAll = new ClipboardJS('.table2csv-output__copy-all-btn', {
+          text: concatAllTables
+        });
+        clipboardAll.on('success', copyMsgAnimation);
+      }
+      
+    });
 
   }
 

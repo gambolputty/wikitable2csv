@@ -2,23 +2,17 @@ var gulp = require('gulp');
 var sass = require('gulp-sass')
 var jshint = require('gulp-jshint');
 var notify = require("gulp-notify");
-var plumber = require('gulp-plumber');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
-var uncss = require('gulp-uncss');
+var postcss = require('gulp-postcss');
+var uncss = require('postcss-uncss');
 var inject = require('gulp-inject');
 var replace = require('gulp-replace');
 var jasmineBrowser = require('gulp-jasmine-browser');
 var fs = require('fs');
 var connect = require('gulp-connect');
 var version = JSON.parse(fs.readFileSync('./package.json')).version;
-var debug = false;
-
-var paths = {
-  src: 'src',
-  dist: 'dist',
-  npm: 'node_modules',
-};
+var debug = true;
 
 function errorHandler(error) {
   notify({
@@ -30,28 +24,16 @@ function errorHandler(error) {
 }
 
 gulp.task('testFixtures', function () {
-  return gulp.src(paths.src + '/index.html')
-    // Inject head html
-    .pipe(inject(gulp.src(paths.src + '/head.html'), {
-      starttag: '<!-- inject:head:{{ext}} -->',
-      removeTags: true,
-      transform: function (filePath, file) {
-        // return file contents as string
-        return file.contents.toString('utf8')
-      }
-    }))
-    .pipe(replace('%%GULP_INJECT_PATH%%', 'spec/fixtures/'))
-    .pipe(replace('%%GULP_INJECT_VERSION%%', version))
-    // copy html files
-    .pipe(gulp.dest('spec/fixtures'));
-  gulp.src([paths.dist + '/app.js', paths.dist + '/style.css',])
+  return gulp.src([
+      './dist/index.html', './dist/app.js', './dist/style.css',
+    ])
     .pipe(gulp.dest('spec/fixtures'));
 })
 
 gulp.task('test', function () {
   var filesForTest = [
-    paths.npm + '/jquery/dist/jquery.js',
-    paths.npm + '/jasmine-jquery/lib/jasmine-jquery.js',
+    './node_modules/jquery/dist/jquery.js',
+    './node_modules/jasmine-jquery/lib/jasmine-jquery.js',
     'spec/fixtures/*',
     'spec/app_spec.js'
   ];
@@ -62,7 +44,7 @@ gulp.task('test', function () {
 })
 
 gulp.task('views', function () {
-  var stream = gulp.src(paths.src + '/index.html')
+  var stream = gulp.src('./src/index.html')
     .pipe(replace('%%GULP_INJECT_PATH%%', ''))
     .pipe(replace('%%GULP_INJECT_VERSION%%', version));
 
@@ -75,7 +57,8 @@ gulp.task('views', function () {
   }
 
   return stream
-    .pipe(gulp.dest(paths.dist))
+    .on('error', errorHandler)
+    .pipe(gulp.dest('./dist'))
     .pipe(connect.reload());
 })
 
@@ -83,15 +66,15 @@ gulp.task('scripts', function  () {
   var stream = gulp.src([
 
       // Vendor
-      paths.npm + '/clipboard/dist/clipboard.js',
+      './node_modules/clipboard/dist/clipboard.js',
 
       // app
-      paths.src + '/js/helper.js',      
-      paths.src + '/js/methods.js',      
-      paths.src + '/js/app.js',      
+      './src/js/helper.js',      
+      './src/js/methods.js',      
+      './src/js/app.js',      
 
     ], {
-      base: paths.src
+      base: './src'
     })
     .pipe(replace('%%GULP_INJECT_DEBUG%%', debug))
     .pipe(concat('app.js'));
@@ -101,44 +84,54 @@ gulp.task('scripts', function  () {
   }
 
   return stream
-    .pipe(plumber({ errorHandler: errorHandler }))
-    .pipe(gulp.dest(paths.dist))
+    .on('error', errorHandler)
+    .pipe(gulp.dest('./dist'))
     .pipe(connect.reload());
 })
 
 gulp.task('styles', function () {
-  return gulp.src(paths.src + '/sass/style.scss')
+  return gulp.src('./src/sass/style.scss')
     .pipe(
       sass({outputStyle: 'compressed'})
       .on('error', errorHandler)
     )
+    .pipe(gulp.dest('./dist'))
+    .pipe(connect.reload());
+})
+
+gulp.task('postcss', function () {
+  var postcssPlugins = [
+    uncss({
+      html: ['./dist/index.html'],
+      ignore: [
+        /\.table2csv.*/,
+        /\.btn\-.+/,
+        /h\d/,
+        /\.[mp][trbl]\-\d/,
+        /\.alert.*/
+      ]
+    })
+  ];
+  return gulp.src('./dist/style.css')
     .pipe(
-      uncss({
-        html: [paths.src + '/index.html'],
-        ignore: [
-          /\.table2csv/,
-          /\.btn\-.+/,
-          /h\d/,
-          /\.[mp][trbl]\-\d/,
-          /\.alert.*/
-        ]
-      })
+      postcss(postcssPlugins)
+      .on('error', errorHandler)
     )
-    .pipe(gulp.dest(paths.dist))
+    .pipe(gulp.dest('./dist'))
     .pipe(connect.reload());
 })
 
 gulp.task('watch', function () {
 
   gulp.watch([
-    paths.src + "/*.html",
+    "./src/*.html",
   ], gulp.series('views'));
 
   gulp.watch([
-    paths.src + '/js/*.js',
+    './src/js/*.js',
   ], gulp.series('scripts'));
 
-  gulp.watch(paths.src + '/sass/**/*.scss', gulp.series('styles'));
+  gulp.watch('./src/sass/**/*.scss', gulp.series('styles'));
 
 })
 
@@ -149,6 +142,6 @@ gulp.task('connect', function() {
     });
 });
 
-var compileAssets = gulp.parallel('views', 'scripts', 'styles');
+var compileAssets = gulp.series('views', 'scripts', 'styles', 'postcss');
 var serve = gulp.parallel('connect', 'watch');
 gulp.task('default', gulp.series(compileAssets, serve));

@@ -1,6 +1,6 @@
 {
   "name": "wikitable2csv",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "repository": "github:gambolputty/wikitable2csv",
   "description": "A web tool to convert Wikipedia tables to CSV",
   "main": "gulpfile.js",
@@ -21,15 +21,16 @@
     "gulp-jasmine-browser": "^4.0.0",
     "gulp-jshint": "^2.0.0",
     "gulp-notify": "^3.2.0",
-    "gulp-plumber": "^1.1.0",
+    "gulp-postcss": "^7.0.1",
     "gulp-replace": "^1.0.0",
     "gulp-sass": "^4.0.1",
     "gulp-uglify": "^3.0.0",
-    "gulp-uncss": "^1.0.6",
     "jasmine-core": "^3.1.0",
     "jasmine-jquery": "^2.1.1",
     "jquery": "^3.2.1",
     "jshint": "^2.9.1",
-    "jshint-stylish": "^2.1.0"
+    "jshint-stylish": "^2.1.0",
+    "postcss-uncss": "^0.16.1",
+    "uncss": "^0.16.2"
   }
 }

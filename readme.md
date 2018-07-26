@@ -9,6 +9,9 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Use i
 **Tip:** to use the data in Excel or similar spreadsheet applications paste the result from your clipboard into the first cell of your spreadsheet. Set the delimiter character to "comma".
 
 ## Changelog
+### 2.2.2
+- updated dependencies, removed gulp-uncss, gulp-plumber
+- 
 ### 2.2.1
 - Support for different Wikimedia Urls. See [#9](../../issues/9)
 ### 2.2.0
