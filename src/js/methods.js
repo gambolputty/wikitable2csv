@@ -265,9 +265,18 @@ var app = (function (parent) {
     // Reference: https://www.mediawiki.org/wiki/Manual:Short_URL
     var urlMatch = urlVal.match(/^https?\:\/{2}(\w+\.\w+\.org)\/(?:w\/index\.php\?title\=([^&\#]+)|[^\/]+\/([^&\#]+)).*$/);
     console.debug(urlMatch);
+
+    if (!urlMatch) {
+      returnInputError();
+      return;
+    }
+
     // get domain
     if (urlMatch[1]) {
       domain = urlMatch[1];      
+    } else {
+      returnInputError();
+      return;
     }
 
     // get title
@@ -275,9 +284,7 @@ var app = (function (parent) {
       title = urlMatch[2];
     } else if (typeof urlMatch[3] !== 'undefined') {
       title = urlMatch[3];
-    }
-
-    if (title === null || domain === null) {
+    } else {
       returnInputError();
       return;
     }
