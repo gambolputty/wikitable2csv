@@ -1,9 +1,11 @@
-// process.env.NODE_ENV
-
 // app modules
 import './sass/style.scss'
 import ui from './ui'
 import parser from './parser'
+
+if (process.env.NODE_ENV !== 'development') {
+	console.debug = function () {};
+}
 
 export default class WikiTable2Csv {
 	constructor() {
