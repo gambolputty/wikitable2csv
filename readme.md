@@ -10,8 +10,8 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Use i
 
 ## Changelog
 ### 2.2.2
-- updated dependencies, removed gulp-uncss, gulp-plumber
-- ParcelJS as build system :)
+- [ParcelJS](https://parceljs.org) as build system :)
+- minor UI changes
 ### 2.2.1
 - Support for different Wikimedia Urls. See [#9](../../issues/9)
 ### 2.2.0
