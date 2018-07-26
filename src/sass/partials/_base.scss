@@ -6,19 +6,20 @@
 
 
 .table2csv-output {
+	display: none;
+	border-top: 1px solid #ddd;
 	&--active {
+		display: block;
 		.table2csv-output__controls { display: block; }
 		.table2csv-output__no-output { display: none;  }
 	}
 
 	&__controls {
 		display: none;
-		margin-bottom: 2rem;
 	}
 
 	&__clear-btn {
 		font-size: $font-size-base;
-		margin-right: 1rem;
 	}
 
 	&__no-output {
@@ -32,14 +33,11 @@
 	&__copy-msg {
 		display: none;
 		color: $green;
-		padding-left: 1rem;
 	}
 
 	&__csv {
 		font-family: $font-family-monospace;
 	}
 
-	&__download-btn {
-		margin-right: 1rem;
-	}
+	&__download-btn {}
 }
