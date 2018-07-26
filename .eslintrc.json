@@ -9,7 +9,7 @@
         "sourceType": "module"
     },
     "globals": {
-        "app": true
+        "App": true
     },
     "rules": {
         "no-const-assign": "warn",

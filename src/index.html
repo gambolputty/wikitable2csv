@@ -5,28 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Wiki Table to CSV online converter</title>
   <meta name="description" content="A web tool to convert Wikipedia Tables to CSV. For Excel or similar spreadsheet applications. Howto: enter the URL of the Wikipedia page containing the table(s). Press 'Convert' and copy the result to your clipboard.">
-  <link rel='stylesheet' href='%%GULP_INJECT_PATH%%style.css?ver=%%GULP_INJECT_VERSION%%' type='text/css' media='all' />
-  <script type='text/javascript' src='%%GULP_INJECT_PATH%%app.js?ver=%%GULP_INJECT_VERSION%%'></script>
-  <script type="text/javascript">
-    app.helper.ready(function() {
-      app.init();
-    });
-  </script>
-  <!-- Piwik -->
-  <script type="text/javascript">
-    var _paq = _paq || [];
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function() {
-      var u="https://piwik.ggor.de/";
-      _paq.push(['setTrackerUrl', u+'piwik.php']);
-      _paq.push(['setSiteId', '3']);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-    })();
-  </script>
-  <noscript><p><img src="https://piwik.ggor.de/piwik.php?idsite=3&rec=1" style="border:0;" alt="" /></p></noscript>
-  <!-- End Piwik Code -->
 </head>
 <body>
   <div class="table2csv container">
@@ -46,9 +24,9 @@
         <form class="table2csv-form mb-4">
           <h2>Input</h2>
           <div class="form-group row">
-            <label for="table2csv-url" class="col-12 col-sm-3 col-form-label">Page URL:</label>
+            <label for="table2csv-url" class="col-12 col-sm-3 col-form-label">Page URL</label>
             <div class="col-12 col-sm-9">
-              <input type="text" id="table2csv-url" class="table2csv-form__url-input form-control" name="url" aria-describedby="url-input-help" value="%%GULP_INJECT_DEFAULT_URL%%">
+              <input type="text" id="table2csv-url" class="table2csv-form__url-input form-control" name="url" aria-describedby="url-input-help">
               <small id="url-input-help" class=" form-text text-muted">e.g. https://en.wikipedia.org/wiki/Lists_of_earthquakes</small>
             </div>
           </div>
@@ -70,7 +48,7 @@
           <div class="form-group row">
           	<label for="table-selector" class="col-12 col-sm-3 col-form-label">CSS table selector</label>
             <div class="col-12 col-sm-9">
-              <input type="text" id="table-selector" class="table2csv-form__table-selector form-control" name="table-selector" value="%%GULP_INJECT_DEFAULT_SELECTOR%%" aria-describedby="table-selector-help">
+              <input type="text" id="table-selector" class="table2csv-form__table-selector form-control" name="table-selector" value="table.wikitable" aria-describedby="table-selector-help">
               <small id="table-selector-help" class="form-text text-muted">Default is "table.wikitable"</small>
             </div>
           </div>
@@ -109,5 +87,22 @@
     </div>
 
   </div>
+
+  <script src="./index.js"></script>
+  <!-- Piwik -->
+  <script type="text/javascript">
+    var _paq = _paq || [];
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="https://piwik.ggor.de/";
+      _paq.push(['setTrackerUrl', u+'piwik.php']);
+      _paq.push(['setSiteId', '3']);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <noscript><p><img src="https://piwik.ggor.de/piwik.php?idsite=3&rec=1" style="border:0;" alt="" /></p></noscript>
+  <!-- End Piwik Code -->
 </body>
 </html>

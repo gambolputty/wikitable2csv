@@ -1,3 +1,111 @@
+// modules are defined as an array
+// [ module function, map of requires ]
+//
+// map of requires is short require name -> numeric require
+//
+// anything defined in a previous bundle is accessed via the
+// orig method which is the require for previous bundles
+
+// eslint-disable-next-line no-global-assign
+parcelRequire = (function (modules, cache, entry, globalName) {
+  // Save the require from previous bundle to this closure if any
+  var previousRequire = typeof parcelRequire === 'function' && parcelRequire;
+  var nodeRequire = typeof require === 'function' && require;
+
+  function newRequire(name, jumped) {
+    if (!cache[name]) {
+      if (!modules[name]) {
+        // if we cannot find the module within our internal map or
+        // cache jump to the current global require ie. the last bundle
+        // that was added to the page.
+        var currentRequire = typeof parcelRequire === 'function' && parcelRequire;
+        if (!jumped && currentRequire) {
+          return currentRequire(name, true);
+        }
+
+        // If there are other bundles on this page the require from the
+        // previous one is saved to 'previousRequire'. Repeat this as
+        // many times as there are bundles until the module is found or
+        // we exhaust the require chain.
+        if (previousRequire) {
+          return previousRequire(name, true);
+        }
+
+        // Try the node require function if it exists.
+        if (nodeRequire && typeof name === 'string') {
+          return nodeRequire(name);
+        }
+
+        var err = new Error('Cannot find module \'' + name + '\'');
+        err.code = 'MODULE_NOT_FOUND';
+        throw err;
+      }
+
+      localRequire.resolve = resolve;
+
+      var module = cache[name] = new newRequire.Module(name);
+
+      modules[name][0].call(module.exports, localRequire, module, module.exports, this);
+    }
+
+    return cache[name].exports;
+
+    function localRequire(x){
+      return newRequire(localRequire.resolve(x));
+    }
+
+    function resolve(x){
+      return modules[name][1][x] || x;
+    }
+  }
+
+  function Module(moduleName) {
+    this.id = moduleName;
+    this.bundle = newRequire;
+    this.exports = {};
+  }
+
+  newRequire.isParcelRequire = true;
+  newRequire.Module = Module;
+  newRequire.modules = modules;
+  newRequire.cache = cache;
+  newRequire.parent = previousRequire;
+  newRequire.register = function (id, exports) {
+    modules[id] = [function (require, module) {
+      module.exports = exports;
+    }, {}];
+  };
+
+  for (var i = 0; i < entry.length; i++) {
+    newRequire(entry[i]);
+  }
+
+  if (entry.length) {
+    // Expose entry point to Node, AMD or browser globals
+    // Based on https://github.com/ForbesLindesay/umd/blob/master/template.js
+    var mainExports = newRequire(entry[entry.length - 1]);
+
+    // CommonJS
+    if (typeof exports === "object" && typeof module !== "undefined") {
+      module.exports = mainExports;
+
+    // RequireJS
+    } else if (typeof define === "function" && define.amd) {
+     define(function () {
+       return mainExports;
+     });
+
+    // <script>
+    } else if (globalName) {
+      this[globalName] = mainExports;
+    }
+  }
+
+  // Override the current require with this new one
+  return newRequire;
+})({"../node_modules/clipboard/dist/clipboard.js":[function(require,module,exports) {
+var define;
+var global = arguments[3];
 /*!
  * clipboard.js v2.0.1
  * https://zenorocha.github.io/clipboard.js
@@ -937,463 +1045,726 @@ module.exports = select;
 /***/ })
 /******/ ]);
 });
-var app = (function (parent) {
-
-  var helper = {};
-
-  helper.ready = function (fn) {
-    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading")
-      fn();
-    else
-      document.addEventListener('DOMContentLoaded', fn);
+},{}],"../../../.asdf/installs/nodejs/8.10.0/.npm/lib/node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
   }
 
-  helper.parseHTML = function (str) {
-    if (typeof document['createRange'] === 'function') {
-      return document.createRange().createContextualFragment(str);
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp):\/\/[^)\n]+/g);
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"../../../.asdf/installs/nodejs/8.10.0/.npm/lib/node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+  newLink.onload = function () {
+    link.remove();
+  };
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"../../../.asdf/installs/nodejs/8.10.0/.npm/lib/node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"sass/style.scss":[function(require,module,exports) {
+
+var reloadCSS = require('_css_loader');
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../../../.asdf/installs/nodejs/8.10.0/.npm/lib/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"helper/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var helper = {};
+
+helper.ready = function (fn) {
+  if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") fn();else document.addEventListener('DOMContentLoaded', fn);
+};
+
+helper.parseHTML = function (str) {
+  if (typeof document['createRange'] === 'function') {
+    return document.createRange().createContextualFragment(str);
+  } else {
+    var el = document.createElement('div');
+    el.innerHTML = str;
+    return el.children[0];
+  }
+};
+
+/*
+  add/remove class
+  credits: https://www.sitepoint.com/add-remove-css-class-vanilla-js/
+ */
+helper.addClass = function (elements, myClass) {
+
+  // if there are no elements, we're done
+  if (!elements) {
+    return;
+  }
+
+  // if we have a selector, get the chosen elements
+  if (typeof elements === 'string') {
+    elements = document.querySelectorAll(elements);
+  }
+
+  // if we have a single DOM element, make it an array to simplify behavior
+  else if (elements.tagName) {
+      elements = [elements];
+    }
+
+  // add class to all chosen elements
+  for (var i = 0; i < elements.length; i++) {
+
+    // if class is not already found
+    if ((' ' + elements[i].className + ' ').indexOf(' ' + myClass + ' ') < 0) {
+
+      // add class
+      elements[i].className += ' ' + myClass;
+    }
+  }
+};
+helper.removeClass = function (elements, myClass) {
+
+  // if there are no elements, we're done
+  if (!elements) {
+    return;
+  }
+
+  // if we have a selector, get the chosen elements
+  if (typeof elements === 'string') {
+    elements = document.querySelectorAll(elements);
+  }
+
+  // if we have a single DOM element, make it an array to simplify behavior
+  else if (elements.tagName) {
+      elements = [elements];
+    }
+
+  // create pattern to find class name
+  var reg = new RegExp('(^| )' + myClass + '($| )', 'g');
+
+  // remove class from all chosen elements
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].className = elements[i].className.replace(reg, ' ');
+  }
+};
+
+/*
+  fade in/out
+  credits: http://www.chrisbuttery.com/articles/fade-in-fade-out-with-javascript/
+ */
+// fade out
+helper.fadeOut = function (el) {
+  el.style.opacity = 1;
+
+  (function fade() {
+    if ((el.style.opacity -= .1) < 0) {
+      el.style.display = "none";
     } else {
-      var el = document.createElement('div');
-      el.innerHTML = str;
-      return el.children[0];
+      requestAnimationFrame(fade);
+    }
+  })();
+};
+// fade in
+helper.fadeIn = function (el, display) {
+  el.style.opacity = 0;
+  el.style.display = display || "block";
+
+  (function fade() {
+    var val = parseFloat(el.style.opacity);
+    if (!((val += .1) > 1)) {
+      el.style.opacity = val;
+      requestAnimationFrame(fade);
+    }
+  })();
+};
+
+// Ajax Request
+helper.sendRequest = function (queryUrl, cb) {
+  var request = new XMLHttpRequest();
+  if (!request) {
+    alert('Cannot create an XMLHTTP instance :(');
+    return;
+  }
+  request.onreadystatechange = function () {
+    if (this.readyState === XMLHttpRequest.DONE) {
+      if (this.status === 200) {
+        if (typeof cb === 'function') {
+          cb(this.responseText);
+        }
+      } else {
+        console.error('Error!');
+        alert('Error sending request to "' + queryUrl + '" :(');
+      }
     }
   };
+  request.open('GET', queryUrl, true);
+  request.send();
+  request = null;
+};
 
-  /*
-    add/remove class
-    credits: https://www.sitepoint.com/add-remove-css-class-vanilla-js/
-   */
-  helper.addClass = function (elements, myClass) {
+// Parse Url
+// Credits: 
 
-    // if there are no elements, we're done
-    if (!elements) {
-      return;
-    }
+exports.default = helper;
+},{}],"index.js":[function(require,module,exports) {
+'use strict';
 
-    // if we have a selector, get the chosen elements
-    if (typeof (elements) === 'string') {
-      elements = document.querySelectorAll(elements);
-    }
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
 
-    // if we have a single DOM element, make it an array to simplify behavior
-    else if (elements.tagName) {
-      elements = [elements];
-    }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-    // add class to all chosen elements
-    for (var i = 0; i < elements.length; i++) {
+var _clipboard = require('clipboard');
 
-      // if class is not already found
-      if ((' ' + elements[i].className + ' ').indexOf(' ' + myClass + ' ') < 0) {
+var _clipboard2 = _interopRequireDefault(_clipboard);
 
-        // add class
-        elements[i].className += ' ' + myClass;
-      }
-    }
-  }
-  helper.removeClass = function (elements, myClass) {
+require('./sass/style.scss');
 
-    // if there are no elements, we're done
-    if (!elements) {
-      return;
-    }
+var _helper = require('./helper');
 
-    // if we have a selector, get the chosen elements
-    if (typeof (elements) === 'string') {
-      elements = document.querySelectorAll(elements);
-    }
+var _helper2 = _interopRequireDefault(_helper);
 
-    // if we have a single DOM element, make it an array to simplify behavior
-    else if (elements.tagName) {
-      elements = [elements];
-    }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-    // create pattern to find class name
-    var reg = new RegExp('(^| )' + myClass + '($| )', 'g');
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } // process.env.NODE_ENV
 
-    // remove class from all chosen elements
-    for (var i = 0; i < elements.length; i++) {
-      elements[i].className = elements[i].className.replace(reg, ' ');
-    }
-  }
 
-  /*
-    fade in/out
-    credits: http://www.chrisbuttery.com/articles/fade-in-fade-out-with-javascript/
-   */
-  // fade out
-  helper.fadeOut = function (el) {
-    el.style.opacity = 1;
+// app modules
 
-    (function fade() {
-      if ((el.style.opacity -= .1) < 0) {
-        el.style.display = "none";
-      } else {
-        requestAnimationFrame(fade);
-      }
-    })();
-  }
-  // fade in
-  helper.fadeIn = function (el, display) {
-    el.style.opacity = 0;
-    el.style.display = display || "block";
 
-    (function fade() {
-      var val = parseFloat(el.style.opacity);
-      if (!((val += .1) > 1)) {
-        el.style.opacity = val;
-        requestAnimationFrame(fade);
-      }
-    })();
-  }
+var WikiTable2Csv = function () {
+	function WikiTable2Csv() {
+		_classCallCheck(this, WikiTable2Csv);
 
-  // Ajax Request
-  helper.sendRequest = function (queryUrl, cb) {
-    var request = new XMLHttpRequest();
-    if (!request) {
-      alert('Cannot create an XMLHTTP instance :(');
-      return;
-    }
-    request.onreadystatechange = function () {
-      if (this.readyState === XMLHttpRequest.DONE) {
-        if (this.status === 200) {
-          if (typeof cb === 'function') {
-            cb(this.responseText);
-          }
-        } else {
-          console.error('Error!');
-          alert('Error sending request to "' + queryUrl + '" :(');
-        }
-      }
-    };
-    request.open('GET', queryUrl, true);
-    request.send();
-    request = null;
-  }
+		// set Vars
+		this.form = document.getElementsByClassName('table2csv-form')[0];
+		this.options = {};
 
-  // Parse Url
-  // Credits: 
+		// Submit event handler
+		this.form.querySelector('.table2csv-form__btn-submit').addEventListener('click', this.submitClickCb.bind(this));
+	}
 
-  parent.helper = helper;
-  return parent;
+	_createClass(WikiTable2Csv, [{
+		key: 'clearOutput',
+		value: function clearOutput() {
+			_helper2.default.removeClass('.table2csv-output', 'table2csv-output--active');
+			document.querySelector('.table2csv-output__controls').innerHTML = '';
+			document.querySelector('.table2csv-output__result').innerHTML = '';
+		}
+	}, {
+		key: 'parseCell',
+		value: function parseCell(cellItem) {
 
-})(app || {});
+			// first: remove invisible elements in cells
+			var every_el = cellItem.querySelectorAll('*');
+			for (var i = 0; i < every_el.length; i++) {
+				var el = every_el[i];
+				if (el.style.display == 'none' || getComputedStyle(el, 'display') == 'none') {
+					el.parentNode.removeChild(el);
+				}
+			}
 
-var app = (function (parent) {
+			var line = cellItem.textContent || cellItem.innerText;
+			if (this.options.trim === true) {
+				line = line.trim();
+			}
+			if (this.options.remove_n === true) {
+				line = line.replace(/\r?\n|\r/g, ' ');
+			}
 
-  /*
-    private methods
-   */
+			// escape double quotes in line
+			if (/\"/.test(line)) {
+				line = line.replace(/\"/g, '""');
+			}
 
-  function clearOutput() {
-    parent.helper.removeClass('.table2csv-output', 'table2csv-output--active');
-    document.querySelector('.table2csv-output__controls').innerHTML = '';
-    document.querySelector('.table2csv-output__result').innerHTML = '';
-  }
+			// put line in double quotes
+			// if line break, comma or quote found in line
+			if (/\r|\n|\"|,/.test(line)) {
+				line = '"' + line + '"';
+			}
 
-  function parseCell(cellItem, options) {
+			return line;
+		}
+	}, {
+		key: 'copyMsgAnimation',
+		value: function copyMsgAnimation(e) {
+			// fade in/out copy msg
+			var copyMsg = e.trigger.nextElementSibling;
+			_helper2.default.fadeIn(copyMsg, 'inline-block');
+			setTimeout(function () {
+				_helper2.default.fadeOut(copyMsg);
+			}, 300);
+			// e.clearSelection();
+		}
+	}, {
+		key: 'concatAllTables',
+		value: function concatAllTables() {
+			// concat tables from textareas
+			var textArr = [];
+			var textareas = document.querySelectorAll('.table2csv-output__csv');
+			var textareasLen = textareas.length;
+			var lastIdx = textareasLen - 1;
+			for (var i = 0; i < textareasLen; i++) {
+				textArr.push(textareas[i].value);
+				if (i !== lastIdx) textArr.push('\n');
+			}
+			return textArr.join('');
+		}
+	}, {
+		key: 'clearBtnCb',
+		value: function clearBtnCb(e) {
+			// clear output
+			this.clearOutput();
+			return false;
+		}
+	}, {
+		key: 'downloadBtnCb',
+		value: function downloadBtnCb(e) {
+			var targetId = e.target.getAttribute('data-download-target');
+			var el = document.getElementById(targetId);
+			var csvString = el.textContent || el.innerText;
 
-    // first: remove invisible elements in cells
-    var every_el = cellItem.querySelectorAll('*');
-    for (var i = 0; i < every_el.length; i++) {
-      var el = every_el[i];
-      if (el.style.display == 'none' || getComputedStyle(el, 'display') == 'none') {
-        el.parentNode.removeChild(el);
-      }
-    }
+			// Download
+			// src: 
+			// 1. https://stackoverflow.com/a/14966131/5732518
+			// 2. https://stackoverflow.com/a/17836529/5732518
+			if (window.navigator.msSaveOrOpenBlob) {
+				var blob = new Blob([csvString]);
+				window.navigator.msSaveOrOpenBlob(blob, 'myFile.csv');
+			} else {
+				var a = document.createElement('a');
+				a.href = 'data:attachment/csv,' + encodeURIComponent(csvString);
+				a.target = '_blank';
+				a.download = targetId + '.csv';
+				document.body.appendChild(a);
+				a.click();
+			}
+		}
+	}, {
+		key: 'sendRequest',
+		value: function sendRequest(queryUrl) {
+			var _this = this;
 
-    var line = cellItem.textContent || cellItem.innerText;
-    if (options.trim === true) {
-      line = line.trim();
-    }
-    if (options.remove_n === true) {
-      line = line.replace(/\r?\n|\r/g, ' ');
-    }
+			_helper2.default.sendRequest(queryUrl, function (responseText) {
+				var data = JSON.parse(responseText);
 
-    // escape double quotes in line
-    if (/\"/.test(line)) {
-      line = line.replace(/\"/g, '""');
-    }
+				// remove images to prevent 404 errors in console
+				var markup = data.parse.text['*'].replace(/<img[^>]*>/g, '');
+				// parse HTML
+				var dom = _helper2.default.parseHTML(markup);
+				// find tables
+				var tables = dom.querySelectorAll(_this.options.tableSelector);
+				if (tables.length <= 0) {
+					alert('Error: could not find any tables on page ' + queryUrl);
+					return;
+				}
 
-    // put line in double quotes
-    // if line break, comma or quote found in line
-    if (/\r|\n|\"|,/.test(line)) {
-      line = '"' + line + '"';
-    }
+				// loop tables
+				var tablesLen = tables.length;
+				for (var i = 0; i < tablesLen; i++) {
 
-    return line;
-  }
+					console.debug('Parsing table ' + i);
 
-  function copyMsgAnimation(e) {
-    // fade in/out copy msg
-    var copyMsg = e.trigger.nextElementSibling;
-    parent.helper.fadeIn(copyMsg, 'inline-block');
-    setTimeout(function () {
-      parent.helper.fadeOut(copyMsg);
-    }, 300);
-    // e.clearSelection();
-  }
+					var tableEl = tables[i];
+					var csv = _this.parseTable(tableEl, _this.options);
 
-  function concatAllTables() {
-    // concat tables from textareas
-    var text = '';
-    var textareas = document.querySelectorAll('.table2csv-output__csv');
-    var textareasLen = textareas.length;
-    var lastIdx = textareasLen - 1;
-    for (var i = 0; i < textareasLen; i++) {
-      text += textareas[i].value;
-      if (i !== lastIdx)
-        text += '\n';
-    }
-    return text;
-  }
+					var blockId = i + 1;
+					var csvContainer = '<div class="mb-5">' + '<h5>Table ' + blockId + '</h5>' + '<textarea id="table-' + blockId + '" class="table2csv-output__csv form-control" rows="7">' + csv + '</textarea>' + '<div class="mt-2">' + '<button class="table2csv-output__download-btn btn btn-outline-primary" data-download-target="table-' + blockId + '">Download</button>' + '<button class="table2csv-output__copy-btn btn btn-outline-primary" data-clipboard-target="#table-' + blockId + '">Copy to clipboard</button>' + '<span class="table2csv-output__copy-msg">Copied!</span>' + '</div>' + '</div>';
+					_helper2.default.addClass('.table2csv-output', 'table2csv-output--active');
+					document.querySelector('.table2csv-output__result').insertAdjacentHTML('beforeend', csvContainer);
+				}
 
-  function clearBtnCb(e) {
-    // clear output
-    clearOutput();
-    return false;
-  }
+				// download btn event handler
+				var dlBtns = document.getElementsByClassName('table2csv-output__download-btn');
+				for (var i = 0; i < dlBtns.length; i++) {
+					dlBtns[i].addEventListener('click', _this.downloadBtnCb);
+				}
 
-  function downloadBtnCb(e) {
-    var targetId = e.target.getAttribute('data-download-target');
-    var el = document.getElementById(targetId);
-    var csvString = el.textContent || el.innerText;
+				// insert clear output button
+				var clearBtn = '<button class="table2csv-output__clear-btn btn btn-outline-primary">Clear Output</button>';
+				document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', clearBtn);
+				document.querySelector('.table2csv-output__clear-btn').addEventListener('click', _this.clearBtnCb.bind(_this));
 
-    // Download
-    // src: 
-    // 1. https://stackoverflow.com/a/14966131/5732518
-    // 2. https://stackoverflow.com/a/17836529/5732518
-    if (window.navigator.msSaveOrOpenBlob) {
-        var blob = new Blob([csvString]);
-        window.navigator.msSaveOrOpenBlob(blob, 'myFile.csv');
-    } else {
-        var a = document.createElement('a');
-        a.href = 'data:attachment/csv,' +  encodeURIComponent(csvString);
-        a.target = '_blank';
-        a.download = targetId + '.csv';
-        document.body.appendChild(a);
-        a.click();
-    }
-  }
+				// init clipboard functions
+				var clipboard = new _clipboard2.default('.table2csv-output__copy-btn');
+				clipboard.on('success', _this.copyMsgAnimation.bind(_this));
 
-  function sendRequest(queryUrl, options) {
-    parent.helper.sendRequest(queryUrl, function (responseText) {
-      var data = JSON.parse(responseText);
+				// insert copy all button
+				if (tablesLen > 1) {
+					var copyAllBtn = '<button class="table2csv-output__copy-all-btn btn btn-outline-primary">Copy all tables to clipboard</button>' + '<span class="table2csv-output__copy-msg">Copied!</span>';
+					document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', copyAllBtn);
+					// init clipboard fn
+					var clipboardAll = new _clipboard2.default('.table2csv-output__copy-all-btn', {
+						text: _this.concatAllTables
+					});
+					clipboardAll.on('success', _this.copyMsgAnimation.bind(_this));
+				}
+			});
+		}
+	}, {
+		key: 'parseTable',
+		value: function parseTable(element) {
+			var result = '',
+			    rows = element.querySelectorAll('tr'),
+			    colsCount = rows[0].children.length,
+			    allSpans = {};
 
-      // remove images to prevent 404 errors in console
-      var markup = data.parse.text['*'].replace(/<img[^>]*>/g, '');
-      // parse HTML
-      var dom = parent.helper.parseHTML(markup);
-      // find tables
-      var tables = dom.querySelectorAll(options.tableSelector);
-      if (tables.length <= 0) {
-        alert('Error: could not find any tables on page ' + queryUrl);
-        return;
-      }
+			// loop tr
+			for (var rowsIdx = 0, rowsLen = rows.length; rowsIdx < rowsLen; rowsIdx++) {
+				var row = rows[rowsIdx],
+				    csvLine = [],
+				    cells = row.querySelectorAll('th, td'),
+				    spanIdx = 0;
 
-      // loop tables
-      var tablesLen = tables.length;
-      for (var i = 0; i < tablesLen; i++) {
+				// loop cells
+				for (var cellIdx = 0; cellIdx < colsCount; cellIdx++) {
+					var cell = cells[cellIdx],
+					    rowSpan = 1,
+					    colSpan = 1;
 
-        console.debug('Parsing table ' + i);
+					// get rowSpan & colSpan attr
+					if (typeof cell !== 'undefined') {
+						var attr1 = cell.getAttribute('rowSpan');
+						if (attr1) {
+							rowSpan = parseInt(attr1);
+						}
+						var attr2 = cell.getAttribute('colSpan');
+						if (attr2) {
+							colSpan = parseInt(attr2);
+						}
+					}
 
-        var tableEl = tables[i];
-        var csv = parseTable(tableEl, options);
+					// loop colSpan, set rowSpan value
+					for (var j = 0; j < colSpan; j++) {
 
-        var blockId = i + 1;
-        var csvContainer = '<div class="mb-5">' +
-          '<h5>Table ' + blockId + '</h5>' +
-          '<textarea id="table-' + blockId + '" class="table2csv-output__csv form-control" rows="7">' + csv + '</textarea>' +
-          '<div class="mt-2">' +
-          '<button class="table2csv-output__download-btn btn btn-outline-primary" data-download-target="table-' + blockId + '">Download</button>' +
-          '<button class="table2csv-output__copy-btn btn btn-outline-primary" data-clipboard-target="#table-' + blockId + '">Copy to clipboard</button>' +
-          '<span class="table2csv-output__copy-msg">Copied!</span>' +
-          '</div>' +
-          '</div>';
-        parent.helper.addClass('.table2csv-output', 'table2csv-output--active');
-        document.querySelector('.table2csv-output__result').insertAdjacentHTML('beforeend', csvContainer);
-      }
-      
-      // download btn event handler
-      var dlBtns = document.getElementsByClassName('table2csv-output__download-btn');
-      for (var i = 0; i < dlBtns.length; i++) {
-        dlBtns[i].addEventListener('click', downloadBtnCb);
-      }
+						// check if there is a cell value for this index (set earlier by rowspan)
+						// console.debug('spanIdx', spanIdx)
+						while (allSpans.hasOwnProperty(spanIdx.toString())) {
+							// console.debug('Has value at span index', spanIdx)
+							var val = allSpans[spanIdx.toString()][1];
+							csvLine.push(val);
 
-      // insert clear output button
-      var clearBtn = '<button class="table2csv-output__clear-btn btn btn-outline-primary">Clear Output</button>';
-      document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', clearBtn);
-      document.querySelector('.table2csv-output__clear-btn').addEventListener('click', clearBtnCb);
+							// decrease by 1 and remove if all rows are covered
+							allSpans[spanIdx.toString()][0] -= 1;
+							if (allSpans[spanIdx.toString()][0] == 0) {
+								delete allSpans[spanIdx.toString()];
+							}
+							spanIdx += 1;
+						}
 
-      // init clipboard functions
-      var clipboard = new ClipboardJS('.table2csv-output__copy-btn');
-      clipboard.on('success', copyMsgAnimation);
+						// parse cell text
+						// don't append if cell is undefined at current index
+						if (typeof cell !== 'undefined') {
+							var cellText = this.parseCell(cell);
+							csvLine.push(cellText);
+						}
+						if (rowSpan > 1) {
+							allSpans[spanIdx.toString()] = [rowSpan - 1, cellText];
+						}
+						spanIdx += 1;
+					}
+				}
+				result += csvLine.join() + '\n';
+			}
+			return result;
+		}
+	}, {
+		key: 'returnInputError',
+		value: function returnInputError() {
+			alert('Error reading Wikipedia url. Please enter a valid Wikipedia url (e. g. https://en.wikipedia.org/wiki/List_of_airports)');
+		}
 
-      // insert copy all button
-      if (tablesLen > 1) {
-        var copyAllBtn = '<button class="table2csv-output__copy-all-btn btn btn-outline-primary">Copy all tables to clipboard</button>' +
-          '<span class="table2csv-output__copy-msg">Copied!</span>';
-        document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', copyAllBtn);
-        // init clipboard fn
-        var clipboardAll = new ClipboardJS('.table2csv-output__copy-all-btn', {
-          text: concatAllTables
-        });
-        clipboardAll.on('success', copyMsgAnimation);
-      }
-      
-    });
-
-  }
-
-  function parseTable(element, options) {
-    var result = '',
-        rows = element.querySelectorAll('tr'),
-        colsCount = rows[0].children.length,
-        allSpans = {};
-
-    // loop tr
-    for (var rowsIdx = 0, rowsLen = rows.length; rowsIdx < rowsLen; rowsIdx++) {
-      var row = rows[rowsIdx],
-          csvLine = [],
-          cells = row.querySelectorAll('th, td'),
-          spanIdx = 0;
-
-      // loop cells
-      for (var cellIdx = 0; cellIdx < colsCount; cellIdx++) {
-        var cell = cells[cellIdx],
-            rowSpan = 1,
-            colSpan = 1;
-
-        // get rowSpan & colSpan attr
-        if (typeof cell !== 'undefined') {
-          var attr1 = cell.getAttribute('rowSpan')
-          if (attr1) {
-            rowSpan = parseInt(attr1);
-          }
-          var attr2 = cell.getAttribute('colSpan')
-          if (attr2) {
-            colSpan = parseInt(attr2);
-          }
-        }
-
-        // loop colSpan, set rowSpan value
-        for (var j = 0; j < colSpan; j++) {
-
-          // check if there is a cell value for this index (set earlier by rowspan)
-          // console.debug('spanIdx', spanIdx)
-          while (allSpans.hasOwnProperty(spanIdx.toString())) {
-            // console.debug('Has value at span index', spanIdx)
-            var val = allSpans[spanIdx.toString()][1];
-            csvLine.push(val);
-
-            // decrease by 1 and remove if all rows are covered
-            allSpans[spanIdx.toString()][0] -= 1;
-            if (allSpans[spanIdx.toString()][0] == 0) {
-              delete allSpans[spanIdx.toString()];
-            }
-            spanIdx += 1;
-          }
-          
-          // parse cell text
-          // don't append if cell is undefined at current index
-          if (typeof cell !== 'undefined') {
-            var cellText = parseCell(cell, options);
-            csvLine.push(cellText);
-          }
-          if (rowSpan > 1) {
-            allSpans[spanIdx.toString()] = [rowSpan - 1, cellText];
-          }
-          spanIdx += 1;            
-          
-        }
-      }
-      result += csvLine.join() + '\n';
-    }
-    return result
-  }
-
-  function returnInputError() {
-    alert('Error reading Wikipedia url. Please enter a valid Wikipedia url (e. g. https://en.wikipedia.org/wiki/List_of_airports)');
-  }
-
-  /*
+		/*
     public methods
    */
 
-  parent.submitClickCb = function (e) {
-    e.preventDefault();
-    var urlVal = parent.form.querySelector('.table2csv-form__url-input').value.trim();
-    if (!urlVal) {
-      returnInputError();
-      return;
+	}, {
+		key: 'submitClickCb',
+		value: function submitClickCb(e) {
+			e.preventDefault();
+			var urlVal = this.form.querySelector('.table2csv-form__url-input').value.trim();
+			if (!urlVal) {
+				this.returnInputError();
+				return;
+			}
+			var title = null;
+			var domain = null;
+
+			// Parse Url
+			// Reference: https://www.mediawiki.org/wiki/Manual:Short_URL
+			var urlMatch = urlVal.match(/^https?\:\/{2}(\w+\.\w+\.org)\/(?:w\/index\.php\?title\=([^&\#]+)|[^\/]+\/([^&\#]+)).*$/);
+			console.debug(urlMatch);
+
+			if (!urlMatch) {
+				this.returnInputError();
+				return;
+			}
+
+			// get domain
+			if (urlMatch[1]) {
+				domain = urlMatch[1];
+			} else {
+				this.returnInputError();
+				return;
+			}
+
+			// get title
+			if (typeof urlMatch[2] !== 'undefined') {
+				title = urlMatch[2];
+			} else if (typeof urlMatch[3] !== 'undefined') {
+				title = urlMatch[3];
+			} else {
+				this.returnInputError();
+				return;
+			}
+
+			var queryUrl = 'https://' + domain + '/w/api.php?action=parse&format=json&origin=*&page=' + title + '&prop=text';
+
+			// set options
+			this.options = {
+				trim: document.querySelector('.table2csv-form__trim').checked,
+				remove_n: document.querySelector('.table2csv-form__remove-n').checked,
+				tableSelector: this.form.querySelector('.table2csv-form__table-selector').value
+			};
+
+			// clear output
+			this.clearOutput();
+
+			console.debug('Title: ' + title);
+			console.debug('URL: ' + queryUrl);
+			console.debug('Options', this.options);
+
+			// send request
+			this.sendRequest(queryUrl);
+
+			return false;
+		}
+	}]);
+
+	return WikiTable2Csv;
+}();
+
+// init
+// make constructor global
+
+
+exports.default = WikiTable2Csv;
+if (!window.hasOwnProperty('App')) {
+	window.App = new WikiTable2Csv();
+}
+},{"clipboard":"../node_modules/clipboard/dist/clipboard.js","./sass/style.scss":"sass/style.scss","./helper":"helper/index.js"}],"../../../.asdf/installs/nodejs/8.10.0/.npm/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var global = arguments[3];
+var OVERLAY_ID = '__parcel__error__overlay__';
+
+var OldModule = module.bundle.Module;
+
+function Module(moduleName) {
+  OldModule.call(this, moduleName);
+  this.hot = {
+    data: module.bundle.hotData,
+    _acceptCallbacks: [],
+    _disposeCallbacks: [],
+    accept: function (fn) {
+      this._acceptCallbacks.push(fn || function () {});
+    },
+    dispose: function (fn) {
+      this._disposeCallbacks.push(fn);
     }
-    var title = null;
-    var domain = null;
+  };
 
-    // Parse Url
-    // Reference: https://www.mediawiki.org/wiki/Manual:Short_URL
-    var urlMatch = urlVal.match(/^https?\:\/{2}(\w+\.\w+\.org)\/(?:w\/index\.php\?title\=([^&\#]+)|[^\/]+\/([^&\#]+)).*$/);
-    console.debug(urlMatch);
-
-    if (!urlMatch) {
-      returnInputError();
-      return;
-    }
-
-    // get domain
-    if (urlMatch[1]) {
-      domain = urlMatch[1];      
-    } else {
-      returnInputError();
-      return;
-    }
-
-    // get title
-    if (typeof urlMatch[2] !== 'undefined') {
-      title = urlMatch[2];
-    } else if (typeof urlMatch[3] !== 'undefined') {
-      title = urlMatch[3];
-    } else {
-      returnInputError();
-      return;
-    }
-
-    var queryUrl = 'https://' + domain + '/w/api.php?action=parse&format=json&origin=*&page=' + title + '&prop=text';
-    var options = {
-      trim: document.querySelector('.table2csv-form__trim').checked,
-      remove_n: document.querySelector('.table2csv-form__remove-n').checked,
-      tableSelector: parent.form.querySelector('.table2csv-form__table-selector').value,
-    };
-
-
-    // clear output
-    clearOutput();
-
-    console.debug('Title: ' + title);
-    console.debug('URL: ' + queryUrl);
-    console.debug('Options', options);
-
-    // send request
-    sendRequest(queryUrl, options);
-
-    return false;
-  }
-
-  return parent;
-
-})(app || {});
-
-var debug = true;
-if (!debug) {
-	console.debug = function () {};
+  module.bundle.hotData = null;
 }
 
-var app = (function (parent) {
+module.bundle.Module = Module;
 
-	parent.init = function () {
-		parent.form = document.getElementsByClassName('table2csv-form')[0];
-		document.querySelector('.table2csv-form__btn-submit').addEventListener('click', parent.submitClickCb);
-	}
+var parent = module.bundle.parent;
+if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
+  var hostname = '' || location.hostname;
+  var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '63599' + '/');
+  ws.onmessage = function (event) {
+    var data = JSON.parse(event.data);
 
-	return parent;
+    if (data.type === 'update') {
+      console.clear();
 
-})(app || {});
+      data.assets.forEach(function (asset) {
+        hmrApply(global.parcelRequire, asset);
+      });
+
+      data.assets.forEach(function (asset) {
+        if (!asset.isNew) {
+          hmrAccept(global.parcelRequire, asset.id);
+        }
+      });
+    }
+
+    if (data.type === 'reload') {
+      ws.close();
+      ws.onclose = function () {
+        location.reload();
+      };
+    }
+
+    if (data.type === 'error-resolved') {
+      console.log('[parcel] ✨ Error resolved');
+
+      removeErrorOverlay();
+    }
+
+    if (data.type === 'error') {
+      console.error('[parcel] 🚨  ' + data.error.message + '\n' + data.error.stack);
+
+      removeErrorOverlay();
+
+      var overlay = createErrorOverlay(data);
+      document.body.appendChild(overlay);
+    }
+  };
+}
+
+function removeErrorOverlay() {
+  var overlay = document.getElementById(OVERLAY_ID);
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+function createErrorOverlay(data) {
+  var overlay = document.createElement('div');
+  overlay.id = OVERLAY_ID;
+
+  // html encode message and stack trace
+  var message = document.createElement('div');
+  var stackTrace = document.createElement('pre');
+  message.innerText = data.error.message;
+  stackTrace.innerText = data.error.stack;
+
+  overlay.innerHTML = '<div style="background: black; font-size: 16px; color: white; position: fixed; height: 100%; width: 100%; top: 0px; left: 0px; padding: 30px; opacity: 0.85; font-family: Menlo, Consolas, monospace; z-index: 9999;">' + '<span style="background: red; padding: 2px 4px; border-radius: 2px;">ERROR</span>' + '<span style="top: 2px; margin-left: 5px; position: relative;">🚨</span>' + '<div style="font-size: 18px; font-weight: bold; margin-top: 20px;">' + message.innerHTML + '</div>' + '<pre>' + stackTrace.innerHTML + '</pre>' + '</div>';
+
+  return overlay;
+}
+
+function getParents(bundle, id) {
+  var modules = bundle.modules;
+  if (!modules) {
+    return [];
+  }
+
+  var parents = [];
+  var k, d, dep;
+
+  for (k in modules) {
+    for (d in modules[k][1]) {
+      dep = modules[k][1][d];
+      if (dep === id || Array.isArray(dep) && dep[dep.length - 1] === id) {
+        parents.push(k);
+      }
+    }
+  }
+
+  if (bundle.parent) {
+    parents = parents.concat(getParents(bundle.parent, id));
+  }
+
+  return parents;
+}
+
+function hmrApply(bundle, asset) {
+  var modules = bundle.modules;
+  if (!modules) {
+    return;
+  }
+
+  if (modules[asset.id] || !bundle.parent) {
+    var fn = new Function('require', 'module', 'exports', asset.generated.js);
+    asset.isNew = !modules[asset.id];
+    modules[asset.id] = [fn, asset.deps];
+  } else if (bundle.parent) {
+    hmrApply(bundle.parent, asset);
+  }
+}
+
+function hmrAccept(bundle, id) {
+  var modules = bundle.modules;
+  if (!modules) {
+    return;
+  }
+
+  if (!modules[id] && bundle.parent) {
+    return hmrAccept(bundle.parent, id);
+  }
+
+  var cached = bundle.cache[id];
+  bundle.hotData = {};
+  if (cached) {
+    cached.hot.data = bundle.hotData;
+  }
+
+  if (cached && cached.hot && cached.hot._disposeCallbacks.length) {
+    cached.hot._disposeCallbacks.forEach(function (cb) {
+      cb(bundle.hotData);
+    });
+  }
+
+  delete bundle.cache[id];
+  bundle(id);
+
+  cached = bundle.cache[id];
+  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
+    cached.hot._acceptCallbacks.forEach(function (cb) {
+      cb();
+    });
+    return true;
+  }
+
+  return getParents(global.parcelRequire, id).some(function (id) {
+    return hmrAccept(global.parcelRequire, id);
+  });
+}
+},{}]},{},["../../../.asdf/installs/nodejs/8.10.0/.npm/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
+//# sourceMappingURL=/src.c62113cc.map
