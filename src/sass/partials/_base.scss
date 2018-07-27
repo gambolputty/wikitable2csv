@@ -4,6 +4,12 @@
 	}
 }
 
+.table2csv-errors {
+	display: none;
+	&--active {
+		display: block;
+	}
+}
 
 .table2csv-output {
 	display: none;

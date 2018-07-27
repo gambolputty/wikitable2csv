@@ -21,7 +21,7 @@ helper.parseHTML = function (str) {
   add/remove class
   credits: https://www.sitepoint.com/add-remove-css-class-vanilla-js/
  */
-helper.addClass = function (elements, myClass) {
+helper.addClass = function (elements, className) {
 
   // if there are no elements, we're done
   if (!elements) {
@@ -42,14 +42,14 @@ helper.addClass = function (elements, myClass) {
   for (var i = 0; i < elements.length; i++) {
 
     // if class is not already found
-    if ((' ' + elements[i].className + ' ').indexOf(' ' + myClass + ' ') < 0) {
+    if ((' ' + elements[i].className + ' ').indexOf(' ' + className + ' ') < 0) {
 
       // add class
-      elements[i].className += ' ' + myClass;
+      elements[i].className += ' ' + className;
     }
   }
 }
-helper.removeClass = function (elements, myClass) {
+helper.removeClass = function (elements, className) {
 
   // if there are no elements, we're done
   if (!elements) {
@@ -66,12 +66,13 @@ helper.removeClass = function (elements, myClass) {
     elements = [elements];
   }
 
-  // create pattern to find class name
-  var reg = new RegExp('(^| )' + myClass + '($| )', 'g');
-
   // remove class from all chosen elements
   for (var i = 0; i < elements.length; i++) {
-    elements[i].className = elements[i].className.replace(reg, ' ');
+    let el = elements[i]
+    if (el.classList)
+      el.classList.remove(className);
+    else
+      el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
   }
 }
 
@@ -114,13 +115,12 @@ helper.sendRequest = function (queryUrl, cb) {
   }
   request.onreadystatechange = function () {
     if (this.readyState === XMLHttpRequest.DONE) {
-      if (this.status === 200) {
+      if (this.status >= 200 && this.status < 400) {
         if (typeof cb === 'function') {
           cb(this.responseText);
         }
       } else {
-        console.error('Error!');
-        alert('Error sending request to "' + queryUrl + '" :(');
+        throw new Error(`The requested Wiki responded with an error :(`)
       }
     }
   };
