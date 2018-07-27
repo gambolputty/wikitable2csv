@@ -11,7 +11,9 @@ A web tool to extract tables from Wikipedia pages and convert them to CSV. Use i
 ## Changelog
 ### 2.2.2
 - [ParcelJS](https://parceljs.org) as build system :)
-- minor UI changes
+- UI changes
+- better error handling
+- improved url parsing (for other Wikimedia projects)
 ### 2.2.1
 - Support for different Wikimedia Urls. See [#9](../../issues/9)
 ### 2.2.0

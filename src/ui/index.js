@@ -47,48 +47,94 @@ ui.downloadBtnCb = function (e) {
   }
 }
 
-ui.returnInputError = function () {
-  alert('Error reading Wikipedia url. Please enter a valid Wikipedia url (e. g. https://en.wikipedia.org/wiki/List_of_airports)');
+ui.createError = function (e) {
+  var msg = e.error.toString();
+  var container = `<div class="alert alert-danger" role="alert">${msg}</div>`
+  helper.addClass('.table2csv-errors', 'table2csv-errors--active');
+  document.querySelector('.table2csv-errors').insertAdjacentHTML('beforeend', container);
+}
+
+ui.clearErrors = function () {
+  helper.removeClass('.table2csv-errors', 'table2csv-errors--active');
+  document.querySelector('.table2csv-errors').innerHTML = '';
+}
+
+ui.createQueryUrl = function (urlVal) {
+  if (!urlVal) {
+    return false;
+  }
+  var title = null;
+
+  // Parse Url
+  // Reference:
+  // 1. https://www.mediawiki.org/wiki/Manual:Short_URL
+  // 2. https://www.mediawiki.org/wiki/API:Main_page
+  // Credit: https://gist.github.com/jlong/2428561
+  var parser = document.createElement('a');
+  parser.href = urlVal;
+  /*
+    "http://example.com:3000/pathname/?search=test#hash"
+    parser.protocol; // => "http:"
+    parser.hostname; // => "example.com"
+    parser.port;     // => "3000"
+    parser.pathname; // => "/pathname/"
+    parser.search;   // => "?search=test"
+    parser.hash;     // => "#hash"
+    parser.host;     // => "example.com:3000"
+
+   */
+  // console.debug('parser.protocol:', parser.protocol)
+  // console.debug('parser.hostname:', parser.hostname)
+  // console.debug('parser.port:', parser.port)
+  // console.debug('parser.pathname:', parser.pathname)
+  // console.debug('parser.search:', parser.search)
+  // console.debug('parser.hash:', parser.hash)
+  // console.debug('parser.host:', parser.host)
+
+  var matchTitle
+  var apiInRoot = false
+  if (/^\/w\/index\.php\/.+$/.test(parser.pathname)) {
+    // 1. http://example.org/w/index.php/Page_title (recent versions of MediaWiki, without CGI support)
+    // -> parser.pathname: /w/index.php/Page_title
+    matchTitle = parser.pathname.match(/^\/w\/index\.php\/([^&\#]+).*$/)
+  } else if (parser.pathname === '/w/index.php') {
+    // 2. http://example.org/w/index.php?title=Page_title (recent versions of MediaWiki, with CGI support)
+    // -> parser.search: ?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
+    // -> parser.pathname: /w/index.php
+    matchTitle = parser.search.match(/^\?title\=([^&\#]+).*$/)
+  } else if (/^\/[a-z_-]+\/[^&\#]+.*$/.test(parser.pathname)) {
+    // 3. http://example.org/wiki/Page_title This is the most common configuration, same as in Wikipedia, though not the default because it requires server side modifications
+    // 4. http://example.org/view/Page_title
+    // -> parser.pathname: /wiki/Lists_of_earthquakes
+    // -> short url must begin with lowercase letter after first slash
+    matchTitle = parser.pathname.match(/^\/[a-z_-]+\/([^&\#]+).*$/)
+  } else if (/^\/.+$/.test(parser.pathname)) {
+    // 5. http://example.org/Page_title (not recommended!)
+    // --> parser.pathname: /Page_title
+    matchTitle = parser.pathname.match(/^\/(.+)$/)
+    apiInRoot = true
+  } else {
+    return false
+  }
+
+  if (matchTitle === null) {
+    return false
+  }
+
+  title = matchTitle[1]
+
+  var apiSlug = apiInRoot ? '' : 'w/'
+  var queryUrl = `${parser.protocol}//${parser.host}/${apiSlug}api.php?action=parse&format=json&origin=*&page=${title}&prop=text`
+  return queryUrl
 }
 
 ui.submitClickCb = function (e) {
   e.preventDefault();
   var urlVal = this.form.querySelector('.table2csv-form__url-input').value.trim();
-  if (!urlVal) {
-    this.ui.returnInputError();
-    return;
+  var queryUrl = this.ui.createQueryUrl(urlVal)
+  if (!queryUrl) {
+    throw new Error('Unable to read Wiki url. Please enter a valid url (e. g. https://en.wikipedia.org/wiki/List_of_airports)')
   }
-  var title = null;
-  var domain = null;
-
-  // Parse Url
-  // Reference: https://www.mediawiki.org/wiki/Manual:Short_URL
-  var urlMatch = urlVal.match(/^https?\:\/{2}(\w+\.\w+\.org)\/(?:w\/index\.php\?title\=([^&\#]+)|[^\/]+\/([^&\#]+)).*$/);
-
-  if (!urlMatch) {
-    this.ui.returnInputError();
-    return;
-  }
-
-  // get domain
-  if (urlMatch[1]) {
-    domain = urlMatch[1];
-  } else {
-    this.ui.returnInputError();
-    return;
-  }
-
-  // get title
-  if (typeof urlMatch[2] !== 'undefined') {
-    title = urlMatch[2];
-  } else if (typeof urlMatch[3] !== 'undefined') {
-    title = urlMatch[3];
-  } else {
-    this.ui.returnInputError();
-    return;
-  }
-
-  var queryUrl = 'https://' + domain + '/w/api.php?action=parse&format=json&origin=*&page=' + title + '&prop=text';
 
   // set options
   this.options = {
@@ -101,83 +147,84 @@ ui.submitClickCb = function (e) {
   // clear output
   this.ui.clearOutput();
 
-  // console.debug('Title: ' + title);
-  // console.debug('URL: ' + queryUrl);
+  // clear errors
+  this.ui.clearErrors();
+
   console.debug('Options', this.options);
 
   // send request
-  this.ui.query.call(this);
-
+  var queryUrl = this.options.url
+  helper.sendRequest(queryUrl, this.ui.handleResponse.bind(this))
   return false;
 }
 
-ui.query = function () {
-  var queryUrl = this.options.url
-  helper.sendRequest(queryUrl, (responseText) => {
-    var data = JSON.parse(responseText);
+ui.handleResponse = function (responseText) {
+  var data = JSON.parse(responseText);
 
-    // remove images to prevent 404 errors in console
-    var markup = data.parse.text['*'].replace(/<img[^>]*>/g, '');
-    // parse HTML
-    var dom = helper.parseHTML(markup);
-    // find tables
-    var tables = dom.querySelectorAll(this.options.tableSelector);
-    if (tables.length <= 0) {
-      alert('Error: could not find any tables on page ' + queryUrl);
-      return;
-    }
+  // check for errors in api response
+  if (data.hasOwnProperty('error')) {
+    throw new Error(`The requested Wiki responded with an error: ${data.error.info}`)
+  }
 
-    // loop tables
-    var tablesLen = tables.length;
-    for (var i = 0; i < tablesLen; i++) {
+  // remove images to prevent 404 errors in console
+  var markup = data.parse.text['*'].replace(/<img[^>]*>/g, '');
 
-      console.debug('Parsing table ' + i);
+  // parse HTML
+  var dom = helper.parseHTML(markup);
 
-      var tableEl = tables[i];
-      var csv = this.parser.parseTable.call(this, tableEl);
+  // find tables
+  var tables = dom.querySelectorAll(this.options.tableSelector);
+  if (tables.length <= 0) {
+    throw new Error('Could not find any tables on the given Wiki page :(')
+  }
 
-      var blockId = i + 1;
-      var csvContainer = '<div class="mb-5">' +
-        '<h5>Table ' + blockId + '</h5>' +
-        '<textarea id="table-' + blockId + '" class="table2csv-output__csv form-control" rows="7">' + csv + '</textarea>' +
-        '<div class="mt-2">' +
-        '<button class="table2csv-output__download-btn btn btn-secondary mr-2" data-download-target="table-' + blockId + '">Download</button>' +
-        '<button class="table2csv-output__copy-btn btn btn-secondary" data-clipboard-target="#table-' + blockId + '">Copy to clipboard</button>' +
-        '<span class="table2csv-output__copy-msg ml-2">Copied!</span>' +
-        '</div>' +
-        '</div>';
-      helper.addClass('.table2csv-output', 'table2csv-output--active');
-      document.querySelector('.table2csv-output__result').insertAdjacentHTML('beforeend', csvContainer);
-    }
+  // loop tables
+  var tablesLen = tables.length;
+  for (var i = 0; i < tablesLen; i++) {
 
-    // download btn event handler
-    var dlBtns = document.getElementsByClassName('table2csv-output__download-btn');
-    for (var i = 0; i < dlBtns.length; i++) {
-      dlBtns[i].addEventListener('click', this.ui.downloadBtnCb);
-    }
+    var tableEl = tables[i];
+    var csv = this.parser.parseTable.call(this, tableEl);
 
-    // insert clear output button
-    var clearBtn = '<button class="table2csv-output__clear-btn btn btn-primary mr-2">Clear</button>';
-    document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', clearBtn);
-    document.querySelector('.table2csv-output__clear-btn').addEventListener('click', this.ui.clearBtnCb.bind(this));
+    var blockId = i + 1;
+    var csvContainer = '<div class="mb-5">' +
+      '<h5>Table ' + blockId + '</h5>' +
+      '<textarea id="table-' + blockId + '" class="table2csv-output__csv form-control" rows="7">' + csv + '</textarea>' +
+      '<div class="mt-2">' +
+      '<button class="table2csv-output__download-btn btn btn-secondary mr-2" data-download-target="table-' + blockId + '">Download</button>' +
+      '<button class="table2csv-output__copy-btn btn btn-secondary" data-clipboard-target="#table-' + blockId + '">Copy to clipboard</button>' +
+      '<span class="table2csv-output__copy-msg ml-2">Copied!</span>' +
+      '</div>' +
+      '</div>';
+    helper.addClass('.table2csv-output', 'table2csv-output--active');
+    document.querySelector('.table2csv-output__result').insertAdjacentHTML('beforeend', csvContainer);
+  }
 
-    // init clipboard functions
-    var clipboard = new ClipboardJS('.table2csv-output__copy-btn');
-    clipboard.on('success', this.ui.copiedMessage.bind(this));
+  // download btn event handler
+  var dlBtns = document.getElementsByClassName('table2csv-output__download-btn');
+  for (var i = 0; i < dlBtns.length; i++) {
+    dlBtns[i].addEventListener('click', this.ui.downloadBtnCb);
+  }
 
-    // insert copy all button
-    if (tablesLen > 1) {
-      var copyAllBtn = '<button class="table2csv-output__copy-all-btn btn btn-primary">Copy all to clipboard</button>' +
-        '<span class="table2csv-output__copy-msg ml-2">Copied!</span>';
-      document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', copyAllBtn);
-      // init clipboard fn
-      var clipboardAll = new ClipboardJS('.table2csv-output__copy-all-btn', {
-        text: this.ui.concatAllTables
-      });
-      clipboardAll.on('success', this.ui.copiedMessage.bind(this));
-    }
+  // insert clear output button
+  var clearBtn = '<button class="table2csv-output__clear-btn btn btn-primary mr-2">Clear</button>';
+  document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', clearBtn);
+  document.querySelector('.table2csv-output__clear-btn').addEventListener('click', this.ui.clearBtnCb.bind(this));
 
-  });
+  // init clipboard functions
+  var clipboard = new ClipboardJS('.table2csv-output__copy-btn');
+  clipboard.on('success', this.ui.copiedMessage.bind(this));
+
+  // insert copy all button
+  if (tablesLen > 1) {
+    var copyAllBtn = '<button class="table2csv-output__copy-all-btn btn btn-primary">Copy all to clipboard</button>' +
+      '<span class="table2csv-output__copy-msg ml-2">Copied!</span>';
+    document.querySelector('.table2csv-output__controls').insertAdjacentHTML('beforeend', copyAllBtn);
+    // init clipboard fn
+    var clipboardAll = new ClipboardJS('.table2csv-output__copy-all-btn', {
+      text: this.ui.concatAllTables
+    });
+    clipboardAll.on('success', this.ui.copiedMessage.bind(this));
+  }
 }
 
 ui.concatAllTables = function () {

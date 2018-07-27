@@ -20,6 +20,8 @@ export default class WikiTable2Csv {
 		// Event handler
 		// Submit
 		this.form.querySelector('.table2csv-form__btn-submit').addEventListener('click', this.ui.submitClickCb.bind(this));
+    // Error handling
+    window.addEventListener('error', this.ui.createError.bind(this))
 	}
 }
 
