@@ -4,17 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Wiki Table to CSV online converter</title>
-  <meta name="description" content="A web tool to convert Wikipedia Tables to CSV. For Excel or similar spreadsheet applications. Howto: enter the URL of the Wikipedia page containing the table(s). Press 'Convert' and copy the result to your clipboard.">
+  <meta name="description" content="A web tool to convert Wiki Tables to CSV.
+  For Excel or similar spreadsheet applications. Howto: enter the URL of the Wiki page containing the table(s).
+  Press 'Convert' and copy the result to your clipboard or download the table as CSV file.">
+  <meta property="og:title" content="Wiki Table to CSV online converter">
+  <meta property="og:description" content="A web tool to convert Wiki Tables to CSV.
+  For Excel or similar spreadsheet applications. Howto: enter the URL of the Wiki page containing the table(s).
+  Press 'Convert' and copy the result to your clipboard or download the table as CSV file.">
+  <meta property="og:url" content="http://wikitable2csv.ggor.de/">
+  <meta property="og:site_name" content="Wiki Table to CSV online converter">
+  <meta property="og:type" content="website">
 </head>
 <body>
 <div class="table2csv container">
 
 	<div class="row justify-content-lg-center">
     <div class="col-12 col-lg-9 mt-5 mb-4">
-      <h1>Convert Wikipedia Tables to CSV</h1>
+      <h1>Convert Wiki Tables to CSV</h1>
       <p>
-        Enter the URL of the Wikipedia page containing the table(s). Press "Convert" and copy the result to your clipboard.
-        Works with Wikipedia.org, Wikimedia.org, Wikibooks.org and other Wikis.
+        Enter the URL of the Wiki page containing the table(s).
+        Press "Convert" and copy the result to your clipboard or download the table as CSV file.
+        Works with Wikipedia.org and other Wiki projects.
       </p>
     </div>
   </div>
@@ -46,7 +56,7 @@
           </div>
         </fieldset>
         <div class="form-group row">
-          <label for="table-selector" class="col-12 col-sm-3 col-form-label">CSS table selector</label>
+          <label for="table-selector" class="col-12 col-sm-3 col-form-label">CSS selector</label>
           <div class="col-12 col-sm-9">
             <input type="text" id="table-selector" class="table2csv-form__table-selector form-control" name="table-selector" value="table.wikitable" aria-describedby="table-selector-help">
             <small id="table-selector-help" class="form-text text-muted">Default is "table.wikitable"</small>
@@ -90,7 +100,7 @@
 
 <script src="./index.js"></script>
 <!-- Piwik -->
-<script type="text/javascript">
+<script>
   var _paq = _paq || [];
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
