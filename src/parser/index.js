@@ -1,7 +1,7 @@
 
 var parser = {};
 
-parser.parseCell = function (cellItem) {
+function parseCell (cellItem) {
 
   // first: remove invisible elements in cells
   var every_el = cellItem.querySelectorAll('*');
@@ -34,10 +34,25 @@ parser.parseCell = function (cellItem) {
   return line;
 }
 
+/*
+  Return maximum number of columns
+ */
+function getMaxColumns (rows) {  
+  var result = 0
+  for (var i = 0, l = rows.length; i < l; i++) {
+    let count = rows[i].children.length
+    if (count > result) {
+      result = count
+    }
+  }
+  return result
+}
+
 parser.parseTable = function (element) {
   var result = '',
       rows = element.querySelectorAll('tr'),
-      colsCount = rows[0].children.length,
+      // get maximum number of cols
+      colsCount = getMaxColumns(rows),
       allSpans = {};
 
   // loop tr
@@ -85,10 +100,12 @@ parser.parseTable = function (element) {
         
         // parse cell text
         // don't append if cell is undefined at current index
-        if (typeof cell !== 'undefined') {
-          var cellText = this.parser.parseCell.call(this, cell);
-          csvLine.push(cellText);
+        if (typeof cell === 'undefined') {
+          var cellText = ''
+        } else {
+          var cellText = parseCell.call(this, cell);          
         }
+        csvLine.push(cellText);
         if (rowSpan > 1) {
           allSpans[spanIdx.toString()] = [rowSpan - 1, cellText];
         }
