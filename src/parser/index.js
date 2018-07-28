@@ -100,12 +100,10 @@ parser.parseTable = function (element) {
         
         // parse cell text
         // don't append if cell is undefined at current index
-        if (typeof cell === 'undefined') {
-          var cellText = ''
-        } else {
+        if (typeof cell !== 'undefined') {
           var cellText = parseCell.call(this, cell);          
+          csvLine.push(cellText);
         }
-        csvLine.push(cellText);
         if (rowSpan > 1) {
           allSpans[spanIdx.toString()] = [rowSpan - 1, cellText];
         }
