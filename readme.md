@@ -1,14 +1,16 @@
 # wikitable2csv 
-A web tool to extract tables from Wikipedia pages and convert them to CSV. Use it online [here](http://wikitable2csv.ggor.de/).
+A web tool to extract tables from Wiki pages and convert them to CSV. Use it online [here](http://wikitable2csv.ggor.de/).
 
 ## How to use
 1. Enter the URL of the Wikipedia page containing the table(s).
 2. Press "Convert".
-3. Copy the results to your clipboard.
+3. Copy the results to your clipboard or download it as CSV file.
 
-**Tip:** to use the data in Excel or similar spreadsheet applications paste the result from your clipboard into the first cell of your spreadsheet. Set the delimiter character to "comma".
+**Tip:** to use the data in Excel or similar spreadsheet applications paste the result from your clipboard into the first cell of your spreadsheet (or open the downloaded file). Set the delimiter character to "comma".
 
 ## Changelog
+### 2.2.3
+- Row-/colspan bugfix, see [#25](../../issues/25)
 ### 2.2.2
 - [ParcelJS](https://parceljs.org) as build system :)
 - UI changes
