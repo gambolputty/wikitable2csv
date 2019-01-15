@@ -1,4 +1,4 @@
-# wikitable2csv 
+# wikitable2csv
 A web tool to extract tables from Wiki pages and convert them to CSV. Use it online [here](http://wikitable2csv.ggor.de/).
 
 ## How to use
@@ -9,6 +9,9 @@ A web tool to extract tables from Wiki pages and convert them to CSV. Use it onl
 **Tip:** to use the data in Excel or similar spreadsheet applications paste the result from your clipboard into the first cell of your spreadsheet (or open the downloaded file). Set the delimiter character to "comma".
 
 ## Changelog
+### 2.2.4
+- Added link to JSON converter
+- fixed vulnerability of dependency package
 ### 2.2.3
 - Row-/colspan bugfix, see [#25](../../issues/25)
 ### 2.2.2
