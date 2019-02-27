@@ -133,7 +133,7 @@ ui.submitClickCb = function (e) {
   var urlVal = this.form.querySelector('.table2csv-form__url-input').value.trim();
   var queryUrl = this.ui.createQueryUrl(urlVal)
   if (!queryUrl) {
-    throw new Error('Unable to read Wiki url. Please enter a valid url (e. g. https://en.wikipedia.org/wiki/List_of_airports)')
+    throw new Error('Unable to read Wiki url. Please enter a valid url (e. g. https://en.wikipedia.org/wiki/Lists_of_earthquakes)')
   }
 
   // set options
