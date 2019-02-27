@@ -9,6 +9,8 @@ A web tool to extract tables from Wiki pages and convert them to CSV. Use it onl
 **Tip:** to use the data in Excel or similar spreadsheet applications paste the result from your clipboard into the first cell of your spreadsheet (or open the downloaded file). Set the delimiter character to "comma".
 
 ## Changelog
+### 2.2.5
+- Updated dependencies & Matomo script
 ### 2.2.4
 - Added link to JSON converter
 - fixed vulnerability of dependency package

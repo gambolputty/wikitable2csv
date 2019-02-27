@@ -1,6 +1,6 @@
 {
   "name": "wikitable2csv",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "A web tool to extract tables from Wiki pages and convert them to CSV.",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,7 @@
     "babel-preset-env": "^1.7.0",
     "cssnano": "^4.1.8",
     "node-sass": "^4.11.0",
+    "parcel-bundler": "^1.11.0",
     "parcel-plugin-clean-dist": "0.0.6"
   }
 }
