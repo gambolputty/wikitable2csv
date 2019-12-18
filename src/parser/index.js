@@ -40,7 +40,7 @@ function parseCell (cellItem) {
 function getMaxColumns (rows) {  
   var result = 0
   for (var i = 0, l = rows.length; i < l; i++) {
-    let count = rows[i].children.length
+    let count = rows[i].children.length;
     if (count > result) {
       result = count
     }
