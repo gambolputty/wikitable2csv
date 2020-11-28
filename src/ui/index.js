@@ -141,6 +141,7 @@ ui.submitClickCb = function (e) {
     trim: document.querySelector('.table2csv-form__trim').checked,
     remove_n: document.querySelector('.table2csv-form__remove-n').checked,
     tableSelector: this.form.querySelector('.table2csv-form__table-selector').value,
+    delimiter: document.querySelector('.table2csv-form__delimiter').value,
     url: queryUrl
   };
 

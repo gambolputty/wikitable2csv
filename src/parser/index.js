@@ -26,8 +26,10 @@ function parseCell (cellItem) {
   }
 
   // put line in double quotes
-  // if line break, comma or quote found in line
-  if (/\r|\n|\"|,/.test(line)) {
+  // if line break, comma or quote found in lines
+  var re = new RegExp(this.options.delimiter, "g");
+
+  if (/\r|\n|\"/.test(line) || re.test(line) ) {
     line = '"' + line + '"';
   }
 
@@ -111,7 +113,7 @@ parser.parseTable = function (element) {
         
       }
     }
-    result += csvLine.join() + '\n';
+    result += csvLine.join(this.options.delimiter) + '\n';
   }
   return result
 }
