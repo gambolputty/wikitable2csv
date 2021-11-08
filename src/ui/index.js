@@ -128,6 +128,7 @@ ui.createQueryUrl = function (urlVal) {
   return queryUrl
 }
 
+// WHEN YOU CLICK "CONVERT"
 ui.submitClickCb = function (e) {
   e.preventDefault();
   var urlVal = this.form.querySelector('.table2csv-form__url-input').value.trim();
@@ -140,7 +141,7 @@ ui.submitClickCb = function (e) {
   this.options = {
     trim: document.querySelector('.table2csv-form__trim').checked,
     remove_n: document.querySelector('.table2csv-form__remove-n').checked,
-    tableSelector: this.form.querySelector('.table2csv-form__table-selector').value,
+    tableSelector: this.form.querySelector('.table2csv-form__table-selector').value, // CSS Selector
     url: queryUrl
   };
 
@@ -154,10 +155,12 @@ ui.submitClickCb = function (e) {
 
   // send request
   var queryUrl = this.options.url
+  // JJJ - THIS UI.HANLE RESPONSE IS WHERE IT PARSES
   helper.sendRequest(queryUrl, this.ui.handleResponse.bind(this))
   return false;
 }
 
+// JJJ - important -- where it actually scrapes data
 ui.handleResponse = function (responseText) {
   var data = JSON.parse(responseText);
 
@@ -183,6 +186,7 @@ ui.handleResponse = function (responseText) {
   for (var i = 0; i < tablesLen; i++) {
 
     var tableEl = tables[i];
+    // JJJ - SEE parser.parseTable
     var csv = this.parser.parseTable.call(this, tableEl);
 
     var blockId = i + 1;

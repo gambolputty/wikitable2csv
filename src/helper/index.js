@@ -117,6 +117,7 @@ helper.sendRequest = function (queryUrl, cb) {
     if (this.readyState === XMLHttpRequest.DONE) {
       if (this.status >= 200 && this.status < 400) {
         if (typeof cb === 'function') {
+          // CALLBACK is where it handles response (ui.handleResponse)
           cb(this.responseText);
         }
       } else {
@@ -124,6 +125,7 @@ helper.sendRequest = function (queryUrl, cb) {
       }
     }
   };
+  // SENDS REQUEST FOR THE DATA
   request.open('GET', queryUrl, true);
   request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
   request.send();

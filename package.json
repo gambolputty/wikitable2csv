@@ -19,14 +19,16 @@
   },
   "homepage": "https://github.com/gambolputty/wikitable2csv#readme",
   "dependencies": {
+    "airtable": "^0.11.1",
     "bootstrap": "^4.4.1",
-    "clipboard": "^2.0.4"
+    "clipboard": "^2.0.4",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
     "cssnano": "^4.1.10",
-    "eslint": "^6.7.2",
+    "eslint": "^8.2.0",
     "parcel-bundler": "^1.12.4",
     "sass": "^1.23.7"
   }

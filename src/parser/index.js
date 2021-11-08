@@ -60,7 +60,14 @@ parser.parseTable = function (element) {
     var row = rows[rowsIdx],
         csvLine = [],
         cells = row.querySelectorAll('th, td'),
-        spanIdx = 0;
+        spanIdx = 0,
+        color = row.getAttribute('style');
+
+    var winner = false;
+
+    if (![null, 'background:#eee;'].includes(color)) {
+        winner = true;
+    }
 
     // loop cells
     for (var cellIdx = 0; cellIdx < colsCount; cellIdx++) {
@@ -70,6 +77,12 @@ parser.parseTable = function (element) {
 
       // get rowSpan & colSpan attr
       if (typeof cell !== 'undefined') {
+        // If colored, set winner to true
+        color = cell.getAttribute('style');
+        if (![null, 'background:#eee;'].includes(color)) {
+          winner = true;
+        }
+
         var attr1 = cell.getAttribute('rowSpan')
         if (attr1) {
           rowSpan = parseInt(attr1);
@@ -84,10 +97,11 @@ parser.parseTable = function (element) {
       for (var j = 0; j < colSpan; j++) {
 
         // check if there is a cell value for this index (set earlier by rowspan)
-        // console.debug('spanIdx', spanIdx)
         while (allSpans.hasOwnProperty(spanIdx.toString())) {
-          // console.debug('Has value at span index', spanIdx)
+          // spanIdx.toString is always zero?
           var val = allSpans[spanIdx.toString()][1];
+          // val is the values in first column (2011(84th))
+          // But it's logging it a number of times so I think it's keeping track of how many cells that left column covers
           csvLine.push(val);
 
           // decrease by 1 and remove if all rows are covered
@@ -101,8 +115,22 @@ parser.parseTable = function (element) {
         // parse cell text
         // don't append if cell is undefined at current index
         if (typeof cell !== 'undefined') {
-          var cellText = parseCell.call(this, cell);          
+            // This operation does this.cell
+          var cellText = parseCell.call(this, cell);
+
+          var links = cell.querySelectorAll('a'); // gives you a noded list
+          var hrefs = ''
+          for (let i=0; i<links.length; i++) {
+            if (links[i]) {
+                // console.debug('links',links[i].getAttribute('href')) // Gives HREF
+                var href = links[i].getAttribute('href')
+                hrefs += ' ' + href;
+            }
+          }
+          // JJJ CSV PUSH
+          // This is every cell except it seems to only log something like (2011(84th)) once
           csvLine.push(cellText);
+          csvLine.push(hrefs)
         }
         if (rowSpan > 1) {
           allSpans[spanIdx.toString()] = [rowSpan - 1, cellText];
@@ -111,6 +139,7 @@ parser.parseTable = function (element) {
         
       }
     }
+    csvLine.push(winner);
     result += csvLine.join() + '\n';
   }
   return result
