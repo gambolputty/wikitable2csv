@@ -1,33 +1,48 @@
 {
   "name": "wikitable2csv",
-  "version": "2.2.5",
-  "description": "A web tool to extract tables from Wiki pages and convert them to CSV.",
-  "main": "index.js",
-  "scripts": {
-    "dev": "parcel src/index.html",
-    "build": "parcel build src/*"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gambolputty/wikitable2csv.git"
-  },
-  "keywords": [],
-  "author": "Gregor Weichbrodt",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/gambolputty/wikitable2csv/issues"
-  },
-  "homepage": "https://github.com/gambolputty/wikitable2csv#readme",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "bootstrap": "^4.4.1",
-    "clipboard": "^2.0.4"
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.11.49",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.7.4",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest",
+      "prettier"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
-    "cssnano": "^4.1.10",
-    "eslint": "^6.7.2",
-    "parcel-bundler": "^1.12.4",
-    "sass": "^1.23.7"
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "2.7.1"
   }
 }
