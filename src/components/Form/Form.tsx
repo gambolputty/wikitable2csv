@@ -16,6 +16,7 @@ export const Form = () => {
   const [localOptions, setLocalOptions] = useState({ ...options });
   const inputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!formIsValid) return;
@@ -34,10 +35,12 @@ export const Form = () => {
       ...localOptions,
     });
   };
+
   const handleFormChange = () => {
     setFormIsValid(formRef.current?.checkValidity() || false);
     setUrlError(null);
   };
+
   const updateLocalOption = (key: keyof Options, value: any) => {
     setLocalOptions((oldState) => ({
       ...oldState,

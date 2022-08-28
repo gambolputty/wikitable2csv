@@ -21,7 +21,6 @@ export const Results = () => {
       "Content-Type": "application/json; charset=UTF-8",
     },
   });
-  console.warn("herllo");
 
   if (error) {
     return (
@@ -52,7 +51,10 @@ export const Results = () => {
   if (!tableCount) {
     return (
       <InfoContainer title="No tables found" theme="gray">
-        <p>Could not find any tables on the given page {":("}</p>
+        <p>
+          Could not find any tables on the given page. Is the{" "}
+          <strong>table selector</strong> set correctly?
+        </p>
       </InfoContainer>
     );
   }
@@ -67,20 +69,15 @@ export const Results = () => {
       </p>
       {htmlTableArray.map(({ id, table }, index) => (
         <Fragment key={id}>
-          <section aria-labelledby={id}>
-            <h2 id={id} className="font-bold text-xl mb-6">
-              Table {index + 1}
-            </h2>
-            <ResultItem table={table} />
-          </section>
+          <ResultItem number={index + 1} id={id} table={table} />
           <hr className="my-8 last-of-type:hidden" />
         </Fragment>
       ))}
       <InfoContainer theme="yellow" className="mt-10">
-        <strong>Tip:</strong> To use the data in Excel or similar spreadsheet
-        applications paste the result from your clipboard into the first cell of
-        your spreadsheet (or open the downloaded file). Set the delimiter
-        character to "comma".
+        <strong>How to use:</strong> Download a CSV table and open it with a
+        spreadsheet application of your choice. Set the delimiter character to
+        "comma". Alternatively: Click on "Copy to clipboard" and paste the table
+        into the first cell of your spreadsheet application.
       </InfoContainer>
     </>
   );

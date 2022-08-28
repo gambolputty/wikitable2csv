@@ -1,5 +1,4 @@
-import { useOptions } from "context";
-import { parseTable, Row } from "utils";
+import { Row } from "utils";
 
 export const Table = ({ rows }: { rows: Row[] }) => {
   return (

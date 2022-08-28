@@ -24,7 +24,15 @@ const createCSVContents = (rows: Row[]) => {
   return result;
 };
 
-export const ResultItem = ({ table }: { table: HTMLTableElement }) => {
+export const ResultItem = ({
+  number,
+  id,
+  table,
+}: {
+  number: number;
+  id: string;
+  table: HTMLTableElement;
+}) => {
   const { options } = useOptions();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const clipboard = useClipboard({
@@ -32,14 +40,28 @@ export const ResultItem = ({ table }: { table: HTMLTableElement }) => {
   });
   const rows = useMemo(() => parseTable(table, options), [options, table]);
   const csvText = useMemo(() => createCSVContents(rows), [rows]);
+  const tableName = options.title + "_" + number;
 
   const handleCopy = () => {
-    console.warn("csvText", csvText);
     clipboard.copy(csvText);
   };
 
+  const handleDownload = () => {
+    const myBlob = new Blob([csvText], { type: "text/csv" });
+    const url = window.URL.createObjectURL(myBlob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = tableName + ".csv";
+    anchor.click();
+    window.URL.revokeObjectURL(url);
+    anchor.remove();
+  };
+
   return (
-    <>
+    <section aria-labelledby={id}>
+      <h2 id={id} className="font-bold text-xl mb-6">
+        Table {number}
+      </h2>
       <div
         className={clsx(
           isCollapsed
@@ -58,9 +80,9 @@ export const ResultItem = ({ table }: { table: HTMLTableElement }) => {
           { "pt-4": !isCollapsed }
         )}
       >
-        <Button>Download CSV</Button>
+        <Button onClick={handleDownload}>Download CSV</Button>
         <Button onClick={handleCopy}>
-          {clipboard.copied ? "Copied!" : "Copy CSV to clipboard"}
+          {clipboard.copied ? "Copied!" : "Copy to clipboard"}
         </Button>
         {isCollapsed && (
           <Button
@@ -71,6 +93,6 @@ export const ResultItem = ({ table }: { table: HTMLTableElement }) => {
           </Button>
         )}
       </div>
-    </>
+    </section>
   );
 };

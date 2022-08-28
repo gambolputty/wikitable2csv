@@ -11,7 +11,7 @@ module.exports = {
         },
       },
       animation: {
-        pulsate: "pulsate 400ms ease-in 1",
+        pulsate: "pulsate 300ms ease-out 1",
       },
     },
   },
