@@ -1,50 +1,81 @@
-import { createApiUrl, parseTable } from "utils";
-import React, { useEffect } from "react";
-import { fetchPage } from "utils";
+import React, { useState } from "react";
+import "./index.css";
+import { Form, InfoContainer, Results } from "components";
+import { Options, OptionsProvider, useOptions } from "context";
 
-// ## Working
-// - [x] https://en.wikipedia.org/wiki/Lists_of_earthquakes
-// - [x] https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)_per_capita
-// - [x] https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace
-// - [x] https://fr.wikipedia.org/w/index.php?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
-// - [x] https://de.wikibooks.org/wiki/Spanisch/_Orthographie
-// - [x] https://zh.wikipedia.org/zh-tw/中国君主列表
+const initialOptions: Options = {
+  tableSelector: ".wikitable",
+  trimCells: true,
+  includeLinkText: true,
+  includeLineBreaks: true,
+  excludedCSSClassNames: [".reference"],
+};
 
-// ## Not working yet
-// - [ ] https://meta.wikimedia.org/wiki/2017_Community_Wishlist_Survey/Results
-// - [ ] https://en.wikipedia.org/wiki/List_of_radioactive_isotopes_by_half-life
+const HowTo = () => {
+  return (
+    <InfoContainer title="How it works">
+      <ol className="p-4 list-decimal list-inside space-y-2 sm:space-y-0 sm:text-lg">
+        <li>
+          Enter the URL of the Wiki page containing the table(s) and hit "Send".
+        </li>
+        <li>
+          Copy the result to your clipboard or download the table(s) as CSV
+          file(s).
+        </li>
+      </ol>
+      <p>Works with Wikipedia.org and other Wiki websites.</p>
+    </InfoContainer>
+  );
+};
 
-const tableSelector = ".wikitable";
+const ResultsWrapper = () => {
+  const { options } = useOptions();
+
+  if (!options.url) {
+    return <HowTo />;
+  }
+
+  return <Results />;
+};
 
 function App() {
-  useEffect(() => {
-    (async () => {
-      const apiUrl = createApiUrl(
-        "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)_per_capita"
-      );
+  return (
+    <OptionsProvider initialOptions={initialOptions}>
+      <main className="max-w-screen-lg px-4 py-4 mx-auto flex flex-col min-h-screen">
+        <header>
+          <h1 className="text-4xl font-bold mb-6 mt-6">
+            Convert Wiki Tables to CSV
+          </h1>
+          <Form />
+        </header>
 
-      if (!apiUrl) {
-        throw new Error("Error creating API url");
-      }
-      const response = await fetchPage(apiUrl);
+        <section className="mt-6 grow flex flex-col mb-auto">
+          <ResultsWrapper />
+        </section>
 
-      const parser = new DOMParser();
-      const dom = parser.parseFromString(response.parse.text["*"], "text/html");
-      const tables: HTMLTableElement[] = Array.from(
-        dom.querySelectorAll(tableSelector)
-      );
-
-      if (!tables.length) {
-        throw new Error("Could not find any tables on the given Wiki page :(");
-      }
-
-      for (const table of tables) {
-        const tableParsed = parseTable(table);
-        console.log(tableParsed);
-      }
-    })();
-  }, []);
-  return <div className="App">henlo1</div>;
+        <footer className="text-sm">
+          <hr className="mt-10 mb-4" />
+          Made by{" "}
+          <a
+            href="https://twitter.com/greg00r"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Gregor Weichbrodt
+          </a>
+          . View on{" "}
+          <a
+            href="https://github.com/gambolputty/wikitable2csv"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
+          .
+        </footer>
+      </main>
+    </OptionsProvider>
+  );
 }
 
 export default App;

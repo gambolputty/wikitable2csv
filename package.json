@@ -10,10 +10,13 @@
     "@types/node": "^16.11.49",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
+    "clsx": "^1.2.1",
+    "nanoid": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "typescript": "^4.7.4",
+    "use-clipboard-copy": "^0.2.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -42,7 +45,12 @@
     ]
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.2",
+    "@types/shortid": "^0.0.29",
+    "autoprefixer": "^10.4.8",
     "eslint-config-prettier": "^8.5.0",
-    "prettier": "2.7.1"
+    "postcss": "^8.4.16",
+    "prettier": "2.7.1",
+    "tailwindcss": "^3.1.8"
   }
 }
