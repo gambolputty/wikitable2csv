@@ -5,7 +5,6 @@ export type Options = {
   title?: string;
   tableSelector: string;
   trimCells: boolean;
-  includeLinkText: boolean;
   includeLineBreaks: boolean;
   excludedCSSClassNames: string[];
 };

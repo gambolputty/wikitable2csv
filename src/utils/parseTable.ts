@@ -47,7 +47,6 @@ const parseNodeRecursive = (node: ChildNode, options: Options) => {
     const nodeName = node.nodeName;
 
     if (
-      (nodeName === "A" && !options.includeLinkText) ||
       (nodeName === "BR" && !options.includeLineBreaks) ||
       isHidden(node as Element)
     ) {
@@ -107,12 +106,16 @@ export const parseTable = (
   table: HTMLTableElement,
   options: Options
 ): Row[] => {
+  // Heavily inspired by: https://github.com/eirikb/normalize-html-table
   const res: any[] = [];
+
   table.querySelectorAll("tr").forEach((row, y) =>
     row.querySelectorAll<HTMLTableCellElement>("th, td").forEach((cell, x) => {
       const rowspan = Number(cell.getAttribute("rowspan") || 1);
       const colspan = Number(cell.getAttribute("colspan") || 1);
+
       while (res[y] && res[y][x]) x++;
+
       for (let yy = y; yy < y + rowspan; yy++) {
         const resRow = (res[yy] = res[yy] || []);
         for (let j = 0; j < colspan; j++) {
@@ -121,6 +124,7 @@ export const parseTable = (
       }
     })
   );
+
   return res
     .filter((row) => row.length > 0)
     .map((row) => ({

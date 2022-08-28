@@ -3,11 +3,7 @@ import { Options, useOptions } from "context";
 import { FormEvent, useRef, useState } from "react";
 import { createApiUrl, startCase } from "utils";
 
-const checkboxes: Array<keyof Options> = [
-  "trimCells",
-  "includeLinkText",
-  "includeLineBreaks",
-];
+const checkboxes: Array<keyof Options> = ["trimCells", "includeLineBreaks"];
 
 export const Form = () => {
   const [formIsValid, setFormIsValid] = useState(false);

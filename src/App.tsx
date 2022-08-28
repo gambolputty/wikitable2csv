@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./index.css";
 import { Form, InfoContainer, Results } from "components";
 import { Options, OptionsProvider, useOptions } from "context";
@@ -6,7 +6,6 @@ import { Options, OptionsProvider, useOptions } from "context";
 const initialOptions: Options = {
   tableSelector: ".wikitable",
   trimCells: true,
-  includeLinkText: true,
   includeLineBreaks: true,
   excludedCSSClassNames: [".reference"],
 };
