@@ -1,18 +1,6 @@
 import { Options } from "context";
 import { generateId } from "lib";
 
-// ## Working
-// - [x] https://en.wikipedia.org/wiki/Lists_of_earthquakes
-// - [x] https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)_per_capita
-// - [x] https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace
-// - [x] https://fr.wikipedia.org/w/index.php?title=Wikip%C3%A9dia:Rapports/Nombre_de_pages_par_namespace&action=view
-// - [x] https://de.wikibooks.org/wiki/Spanisch/_Orthographie
-// - [x] https://zh.wikipedia.org/zh-tw/中国君主列表
-
-// ## Not working yet
-// - [ ] https://meta.wikimedia.org/wiki/2017_Community_Wishlist_Survey/Results (handle redirects)
-// - [ ] https://en.wikipedia.org/wiki/List_of_radioactive_isotopes_by_half-life
-
 const parser = new DOMParser();
 export const getHtmlTables = (
   html: string,
@@ -38,6 +26,14 @@ export type Row = {
 
 const isHidden = (el: Element) => getComputedStyle(el).display === "none";
 
+const hasExcludedClassName = (excluded: string[], node: HTMLElement) => {
+  for (let i = 0, l = excluded.length; i < l; i++) {
+    if (node.className.indexOf(excluded[i]) !== -1) return true;
+  }
+
+  return false;
+};
+
 const parseNodeRecursive = (node: ChildNode, options: Options) => {
   let textArray: string[] = [];
 
@@ -48,6 +44,10 @@ const parseNodeRecursive = (node: ChildNode, options: Options) => {
 
     if (
       (nodeName === "BR" && !options.includeLineBreaks) ||
+      hasExcludedClassName(
+        options.excludedCSSClassNames,
+        node as HTMLElement
+      ) ||
       isHidden(node as Element)
     ) {
       return textArray;

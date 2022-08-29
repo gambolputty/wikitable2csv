@@ -1,6 +1,6 @@
 import { Button } from "components";
 import { Options, useOptions } from "context";
-import { FormEvent, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { createApiUrl, startCase } from "utils";
 
 const checkboxes: Array<keyof Options> = ["trimCells", "includeLineBreaks"];
@@ -26,9 +26,13 @@ export const Form = () => {
     }
 
     updateOptions({
+      ...localOptions,
       title: titleAndQueryUrl.title,
       url: titleAndQueryUrl.queryUrl,
-      ...localOptions,
+      excludedCSSClassNames: localOptions.excludedCSSClassNames.map((val) => {
+        val = val.trim();
+        return val.charAt(0) === "." ? val.slice(1) : val;
+      }),
     });
   };
 
@@ -128,7 +132,7 @@ export const Form = () => {
               onChange={(e) =>
                 updateLocalOption(
                   "excludedCSSClassNames",
-                  e.target.value.split(",")
+                  e.target.value.length ? e.target.value.split(",") : []
                 )
               }
               placeholder="Comma separated list of CSS class names to exclude"

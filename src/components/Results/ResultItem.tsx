@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { Table, Button } from "components";
 import { useOptions } from "context";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { parseTable, Row } from "utils";
 import { useClipboard } from "use-clipboard-copy";
 
@@ -24,6 +24,8 @@ const createCSVContents = (rows: Row[]) => {
   return result;
 };
 
+const urlCreator = window.URL || window.webkitURL;
+
 export const ResultItem = ({
   number,
   id,
@@ -35,6 +37,7 @@ export const ResultItem = ({
 }) => {
   const { options } = useOptions();
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [objectURL, setObjectURL] = useState<string>();
   const clipboard = useClipboard({
     copiedTimeout: 800,
   });
@@ -42,20 +45,15 @@ export const ResultItem = ({
   const csvText = useMemo(() => createCSVContents(rows), [rows]);
   const tableName = options.title + "_" + number;
 
-  const handleCopy = () => {
-    clipboard.copy(csvText);
-  };
-
-  const handleDownload = () => {
-    const myBlob = new Blob([csvText], { type: "text/csv" });
-    const url = window.URL.createObjectURL(myBlob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = tableName + ".csv";
-    anchor.click();
-    window.URL.revokeObjectURL(url);
-    anchor.remove();
-  };
+  useEffect(() => {
+    if (!objectURL) {
+      setObjectURL(
+        urlCreator.createObjectURL(new Blob([csvText], { type: "text/csv" }))
+      );
+    } else {
+      return () => urlCreator.revokeObjectURL(objectURL);
+    }
+  }, [csvText, objectURL]);
 
   return (
     <section aria-labelledby={id}>
@@ -80,8 +78,10 @@ export const ResultItem = ({
           { "pt-4": !isCollapsed }
         )}
       >
-        <Button onClick={handleDownload}>Download CSV</Button>
-        <Button onClick={handleCopy}>
+        <Button as="link" download={tableName + ".csv"} href={objectURL}>
+          Download CSV
+        </Button>
+        <Button onClick={() => clipboard.copy(csvText)}>
           {clipboard.copied ? "Copied!" : "Copy to clipboard"}
         </Button>
         {isCollapsed && (

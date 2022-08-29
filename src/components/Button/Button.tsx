@@ -39,7 +39,7 @@ type ButtonAsButton = BaseProps &
 
 type ButtonAsExternal = BaseProps &
   Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseProps> & {
-    as: "externalLink";
+    as: "link";
   };
 
 type ButtonProps = ButtonAsButton | ButtonAsExternal;
@@ -76,16 +76,10 @@ export const Button = forwardRef(
       className
     );
 
-    if (props.as === "externalLink") {
+    if (props.as === "link") {
       const { as, target, rel, ...rest } = props;
       return (
-        <a
-          ref={ref}
-          className={classNames}
-          target="_blank"
-          rel="noopener noreferrer"
-          {...rest}
-        >
+        <a ref={ref} className={classNames} {...rest}>
           {content}
         </a>
       );

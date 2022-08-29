@@ -7,7 +7,7 @@ const initialOptions: Options = {
   tableSelector: ".wikitable",
   trimCells: true,
   includeLineBreaks: true,
-  excludedCSSClassNames: [".reference"],
+  excludedCSSClassNames: ["reference"],
 };
 
 const HowTo = () => {
