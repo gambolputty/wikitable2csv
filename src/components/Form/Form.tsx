@@ -1,6 +1,6 @@
 import { Button } from "components";
 import { Options, useOptions } from "context";
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { createApiUrl, startCase } from "utils";
 
 const checkboxes: Array<keyof Options> = ["trimCells", "includeLineBreaks"];
