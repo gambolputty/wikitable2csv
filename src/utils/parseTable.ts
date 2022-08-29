@@ -34,6 +34,8 @@ const hasExcludedClassName = (excluded: string[], node: HTMLElement) => {
   return false;
 };
 
+const forbiddenNodeNames = new Set(["STYLE", "LINK"]);
+
 const parseNodeRecursive = (node: ChildNode, options: Options) => {
   let textArray: string[] = [];
 
@@ -44,6 +46,7 @@ const parseNodeRecursive = (node: ChildNode, options: Options) => {
 
     if (
       (nodeName === "BR" && !options.includeLineBreaks) ||
+      forbiddenNodeNames.has(nodeName) ||
       hasExcludedClassName(
         options.excludedCSSClassNames,
         node as HTMLElement
