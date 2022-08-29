@@ -16,4 +16,4 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 3. In VSCode launch the "Chrome" debugger
 
 ## License
-[MIT](https://github.com/gambolputty/wikitable2csv/blob/master/LICENSE) © Gregor Weichbrodt
+[MIT](https://github.com/gambolputty/wikitable2csv/blob/main/LICENSE) © Gregor Weichbrodt
