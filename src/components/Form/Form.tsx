@@ -116,7 +116,7 @@ export const Form = () => {
               onChange={(e) =>
                 updateLocalOption("tableSelector", e.target.value)
               }
-              placeholder='Defaults to ".wikitable"'
+              placeholder='Usually ".wikitable"'
               className="rounded-md mt-1 invalid:border-red-500 invalid:ring-red-500"
             />
           </div>
